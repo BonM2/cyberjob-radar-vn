@@ -14,7 +14,7 @@
 
 CyberJob Radar VN được định hướng là công cụ cá nhân tổng hợp tin tuyển dụng An toàn thông tin và An ninh mạng tại Việt Nam. MVP v1.0 dành cho một người dùng và chạy cục bộ trên Windows.
 
-Hệ thống dự kiến tự kiểm tra các nguồn tuyển dụng đã được cấu hình và xác minh; chuẩn hóa, phân loại, chống trùng và hiển thị tin trên dashboard. Người dùng có thể tìm kiếm, lọc, lưu tin, theo dõi quá trình ứng tuyển và mở bài tuyển dụng gốc để tự ứng tuyển. **Các chức năng này chưa được triển khai.**
+Hệ thống dự kiến tự kiểm tra các nguồn tuyển dụng đã được cấu hình và xác minh; chuẩn hóa, phân loại, chống trùng và hiển thị tin trên dashboard. Người dùng có thể tìm kiếm, lọc, lưu tin, theo dõi quá trình ứng tuyển và mở bài tuyển dụng gốc để tự ứng tuyển. 
 
 ## Mục tiêu
 
