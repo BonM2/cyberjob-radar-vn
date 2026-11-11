@@ -1,7 +1,8 @@
 """Manual, read-only Phase 0 probe for two candidate job boards.
 
-Before running, verify permission for the selected board, the allowed request
-frequency, and permission to display/retain the aggregate report. This probe
+Before running, verify permission for the selected board and permission to
+display/retain the aggregate report. If request frequency is unverified, only
+one GET is allowed per invocation; this is not a provider-approved rate. This probe
 does not establish those permissions or mark a source as verified. It outputs
 only a JSON report to stdout; it never saves response bodies or job descriptions.
 Lever may include descriptions in its response even though this script only
@@ -99,20 +100,29 @@ def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Manual GET-only smoke test. Verify the selected board's access, "
-            "request frequency, and aggregate-report permissions before running."
+            "and aggregate-report permissions before running. An unknown request "
+            "frequency limits each invocation to one GET; it does not establish permission."
         )
     )
-    parser.add_argument("--source", choices=tuple(SOURCES), required=True)
     parser.add_argument(
-        "--access-basis", required=True, type=evidence_url,
-        help="HTTPS evidence for permitted read-only access to this board.",
+        "--source", choices=tuple(SOURCES), default="axon",
+        help="Board to inspect (default: axon).",
     )
     parser.add_argument(
-        "--rate-basis", required=True, type=evidence_url,
-        help="HTTPS evidence for the allowed request frequency for this board.",
+        "--access-basis", type=evidence_url,
+        help="HTTPS access reference; defaults to provider API documentation, not board-specific permission.",
     )
     parser.add_argument(
-        "--confirm-access-and-rate", required=True, action="store_true",
+        "--rate-basis", type=evidence_url, default=None,
+        help="HTTPS rate evidence, if verified. If omitted, report it as unknown and allow only one GET.",
+    )
+    access_confirmation = parser.add_mutually_exclusive_group(required=True)
+    access_confirmation.add_argument(
+        "--confirm-access", action="store_true",
+        help="Confirm permitted read-only access to this board; does not confirm its rate limit.",
+    )
+    access_confirmation.add_argument(
+        "--confirm-access-and-rate", action="store_true",
         help="Confirm that the selected board's read access and run frequency are permitted.",
     )
     parser.add_argument(
@@ -120,8 +130,8 @@ def parse_arguments() -> argparse.Namespace:
         help="Confirm that displaying the aggregate technical report is permitted.",
     )
     parser.add_argument(
-        "--max-requests", type=int, choices=range(1, 4), default=2,
-        help="Maximum GET requests for this run (1-3; default: 2).",
+        "--max-requests", type=int, choices=range(1, 4), default=1,
+        help="Maximum GET requests for this run (1-3; default: 1).",
     )
     parser.add_argument(
         "--min-interval-seconds", type=float, default=5.0,
@@ -132,6 +142,16 @@ def parse_arguments() -> argparse.Namespace:
         help="Lever page size (1-50; default: 50); unused for Greenhouse.",
     )
     args = parser.parse_args()
+    if args.access_basis is None:
+        args.access_basis = (
+            "https://docs.greenhouse.io/job-board"
+            if args.source == "axon"
+            else "https://github.com/lever/postings-api"
+        )
+    if args.confirm_access_and_rate and args.rate_basis is None:
+        parser.error("--confirm-access-and-rate requires --rate-basis")
+    if args.max_requests > 1 and not (args.rate_basis and args.confirm_access_and_rate):
+        parser.error("More than one GET requires --rate-basis and --confirm-access-and-rate")
     if not 5.0 <= args.min_interval_seconds <= 3600.0:
         parser.error("--min-interval-seconds must be between 5 and 3600")
     return args
@@ -207,8 +227,10 @@ def run_probe(args: argparse.Namespace) -> tuple[dict[str, Any], int]:
         "board": source["board"],
         "endpoint": source["endpoint"],
         "source_status": "candidate; not verified by this tool",
-        "access_evidence_supplied_by_operator": args.access_basis,
+        "access_basis_reference": args.access_basis,
+        "access_reference_note": "A provider documentation URL is not proof of board-specific permission.",
         "rate_evidence_supplied_by_operator": args.rate_basis,
+        "rate_status": "operator_confirmed_not_independently_verified" if args.confirm_access_and_rate else "unverified",
         "request_limit": args.max_requests,
         "min_interval_seconds": args.min_interval_seconds,
         "run_outcome": "not_completed",
@@ -241,6 +263,11 @@ def run_probe(args: argparse.Namespace) -> tuple[dict[str, Any], int]:
             "Counts include duplicates and must not be treated as validated classification."
         ),
     }
+    if not args.confirm_access_and_rate:
+        report["unverified_conditions"].append(
+            "Allowed request frequency is unverified. One GET per invocation is a local cap, "
+            "not a provider rate limit; repeated runs also require consideration."
+        )
     try:
         import httpx
     except ImportError:

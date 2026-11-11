@@ -1,7 +1,7 @@
 # CyberJob Radar VN — Source Validation
 
 > **Dự án:** CyberJob Radar VN — MVP sản phẩm v1.0
-> **Phiên bản tài liệu:** 0.1 — khảo sát ban đầu
+> **Phiên bản tài liệu:** 0.2 — cập nhật kết quả smoke test Axon ngày 11/11/2026
 > **Giai đoạn SDLC:** Phase 0 — Requirements Analysis & Feasibility / Source Validation  
 > **Trạng thái:** `IN PROGRESS` — **chưa có nguồn cụ thể đạt `verified`**  
 > **Phạm vi:** Công cụ cá nhân chạy cục bộ, tổng hợp tin tuyển dụng cybersecurity tại Việt Nam
@@ -49,13 +49,14 @@ Provider chỉ được đánh giá như công nghệ; không tự nhận trạn
 
 - Đã đối chiếu **tài liệu API chính thức**, một số trang tuyển dụng công khai và **điều khoản sử dụng** bằng trình duyệt/tìm kiếm web.
 - Đã tìm được ví dụ trang tin Security có địa điểm Việt Nam của **Axon (Greenhouse), Amanotes (Lever), Picus (Lever)**.
-- **Chưa thực hiện smoke test HTTP trực tiếp bằng HTTPX/curl** đến endpoint API của các board trong quy trình dự án.
-- **Chưa tải/lưu response JSON mẫu**, chưa kiểm tra chi tiết phân trang và chưa đo số tin trong một API response hoàn chỉnh.
+- Người dùng đã thực hiện smoke test HTTPX với Axon ngày **11/11/2026**, cung cấp báo cáo terminal: 1 GET, HTTP `200`, JSON hợp lệ và nhận 489 tin. Kết quả chi tiết tại mục 7.4; lượt cập nhật tài liệu này không chạy lại script hoặc gọi API.
+- **Chưa có báo cáo smoke test Amanotes hoặc Picus** trong bằng chứng được cung cấp.
+- **Chưa lưu response JSON nguồn làm fixture**. Axon trả `meta.total = 489`, khớp số tin nhận được; phân trang/phạm vi đầy đủ vẫn chưa xác nhận (`pagination_complete = null`).
 - **Chưa xác nhận đầy đủ quyền lưu/tái sử dụng mô tả JD** cho ứng dụng aggregator cá nhân; API có thể được thiết kế cho website tuyển dụng của chính doanh nghiệp.
 - **Chưa có nguồn được xác minh là đang có tin SOC/Blue Team Intern, Fresher hoặc Junior tại Việt Nam.** Các tin ví dụ chủ yếu yêu cầu kinh nghiệm.
 - Số lượng tin đang có trên các portal hoặc board thay đổi liên tục. **Không sử dụng số lượng tìm thấy trong lượt tìm kiếm làm số liệu kiểm thử API.**
 
-**Kết luận tại thời điểm lập tài liệu:** `PARTIALLY VALIDATED`. Chưa đạt điều kiện hoàn thành Phase 0 theo `intent.md`.
+**Kết luận cập nhật ngày 11/11/2026:** `PARTIALLY VALIDATED`. Axon đã có bằng chứng truy cập và xử lý JSON thành công; chưa đạt điều kiện hoàn thành Phase 0 theo `intent.md`.
 
 ## 3. Kết quả khảo sát tổng quan
 
@@ -81,20 +82,21 @@ Các nhận xét về khả năng tích hợp chỉ là **kết quả đánh gi�
 | `source_name` | Axon Careers |
 | `company` | Axon |
 | `provider` | Greenhouse |
-| `external_key` dự kiến | `axon` — cần đối chiếu bằng endpoint thực tế |
+| `external_key` | `axon` — endpoint dùng khóa này đã trả HTTP `200` trong báo cáo smoke test ngày 11/11/2026 |
 | Board/website | https://job-boards.greenhouse.io/axon |
 | API mẫu theo tài liệu | `GET https://boards-api.greenhouse.io/v1/boards/axon/jobs?content=true` |
+| Endpoint đã smoke test | `GET https://boards-api.greenhouse.io/v1/boards/axon/jobs` — không có query parameter, không yêu cầu `content=true` |
 | Trang tin quan sát | https://job-boards.greenhouse.io/axon/jobs/7823328003 |
 | Ví dụ tin | Senior Security Operations Engineer I |
 | Địa điểm quan sát | Ho Chi Minh City, Vietnam |
 | Cấp bậc/mức phù hợp | Senior; phù hợp để kiểm thử nhận diện lĩnh vực, **không phải Intern/Junior** |
-| Phân trang/phạm vi thực tế | **Chưa kiểm chứng bằng request**; cần xác nhận toàn bộ board được đọc đầy đủ |
-| Dữ liệu API thực nhận | **Chưa kiểm chứng** (`id`, `title`, `location`, `absolute_url`, `content`, `updated_at` là các trường mô tả trong tài liệu API) |
+| Phân trang/phạm vi thực tế | Nhận 489 tin trong 1 response, khớp `meta.total = 489`; chưa xác nhận toàn bộ phạm vi board, `pagination_complete = null` |
+| Dữ liệu API thực nhận | Báo cáo ghi JSON hợp lệ, 489 ID phân biệt; không phát hiện thiếu/sai `id`, `title`, `location.name`, `absolute_url` theo các kiểm tra hiện tại của script. `content`, `updated_at`, độ ổn định ID qua nhiều lần và nội dung bài gốc chưa được xác minh bởi báo cáo |
 | Quyền lưu metadata/JD | **Chưa xác nhận** quyền sử dụng với aggregator bên thứ ba |
 | Tần suất/rate-limit được phép | **Chưa xác nhận cho board này**; không suy đoán từ tài liệu của bên thứ ba |
 | Response fixture được phép lưu | Chưa có |
 | Source Validation Status | `candidate` |
-| Integration Decision | `pending_permission` — Ứng viên ưu tiên cho smoke test đầu tiên **sau khi xác định phạm vi sử dụng hợp lệ** |
+| Integration Decision | `pending_permission` — đã có smoke test kỹ thuật; còn cần xác minh quyền sử dụng dữ liệu và phạm vi đầy đủ trước tích hợp |
 
 **Bằng chứng:** [Trang tin Axon](https://job-boards.greenhouse.io/axon/jobs/7823328003); [Greenhouse Job Board API](https://docs.greenhouse.io/job-board); [Greenhouse API overview](https://support.greenhouse.io/hc/en-us/articles/10568627186203-Greenhouse-API-overview).
 
@@ -174,9 +176,9 @@ Có thể tiếp tục **xem tin bằng trình duyệt như người dùng bình
 | URL gốc | Có `absolute_url` | Có URL posting | URL HTTP(S) hợp lệ và trỏ về bài tuyển dụng |
 | Phân trang/danh sách đầy đủ | Cần xác nhận theo endpoint | `skip`/`limit` | Đọc đủ phạm vi; không kết luận tin biến mất từ trang thiếu |
 
-Bảng là **khả năng theo tài liệu provider**, chưa phải bằng chứng dữ liệu đã được lấy từ từng board.
+Bảng là **khả năng theo tài liệu provider**. Bằng chứng API thực nhận của Axon được ghi riêng tại mục 7.4; không suy rộng kết quả đó cho Amanotes hoặc Picus.
 
-## 7. Kế hoạch smoke test (chưa thực hiện)
+## 7. Kế hoạch và kết quả smoke test
 
 ### 7.1. Điều kiện trước khi gọi API
 
@@ -236,6 +238,49 @@ notes: null
 - `pagination_complete`: Đã xác nhận đọc hết phạm vi nguồn hay chưa.
 - `pagination_evidence`: Căn cứ xác định dữ liệu đã đầy đủ, bao gồm điều kiện kết thúc hoặc thông tin phạm vi.
 
+### 7.4. Biên bản Axon — ngày 11/11/2026
+
+**Nguồn bằng chứng:** hai báo cáo JSON terminal do người dùng cung cấp trong cuộc trao đổi ngày 11/11/2026, từ `scripts/smoke_test_public_apis.py`. Đây là ghi nhận báo cáo do người dùng chạy, không phải kết quả chạy lại trong lúc cập nhật tài liệu. Không lưu response API hoặc JD trong biên bản này.
+
+| Lượt | Thời điểm UTC | Thời điểm Việt Nam (UTC+7) | Kết quả |
+|---|---|---|---|
+| 1 | `2026-11-11T13:41:20.077670+00:00` | `2026-11-11T20:41:20.077670+07:00` | `run_outcome = error`; thiếu HTTPX, `request_count = 0`, chưa có dữ liệu từ nguồn |
+| 2 | `2026-11-11T13:43:14.498646+00:00` | `2026-11-11T20:43:14.498646+07:00` | `run_outcome = observations_require_review`; 1 GET thành công, `errors = []` |
+
+Lệnh người dùng cung cấp cho lượt 2:
+
+```powershell
+python .\scripts\smoke_test_public_apis.py --confirm-access --confirm-report-permission
+```
+
+| Thuộc tính lượt 2 | Kết quả từ báo cáo |
+|---|---|
+| `validation_id` / source / provider | `SRC-01` / `axon` / `greenhouse` |
+| Board | `https://job-boards.greenhouse.io/axon` |
+| Endpoint / phương thức / query parameters | `https://boards-api.greenhouse.io/v1/boards/axon/jobs` / `GET` / `{}` |
+| Căn cứ tham khảo truy cập | `https://docs.greenhouse.io/job-board` — tài liệu provider, chưa phải xác nhận quyền theo board |
+| Căn cứ tần suất / trạng thái | `null` / `unverified` |
+| Giới hạn request / khoảng cách cấu hình | 1 request / 5 giây; chỉ là cấu hình cục bộ, không chứng minh rate limit được phép; một request không đo được khoảng cách thực tế |
+| HTTP status / content type / JSON | `200` / `application/json` / `json_valid = true` |
+| Thời gian tới headers / tổng thời gian xử lý request | `371.3 ms` / `381.6 ms` theo script |
+| Request thực hiện / trang đọc | 1 / 1 |
+| `received_count` / `unique_identified_jobs` | 489 / 489 |
+| Bản ghi không hợp lệ / ID trùng | 0 / 0 theo kiểm tra của script |
+| Trường thiếu/sai | `id = 0`, `title = 0`, `location = 0`, `url = 0` theo kiểm tra của script |
+| `possible_cybersecurity_vietnam_count` | 1 — dấu hiệu theo từ khóa, chưa kiểm tra thủ công |
+| `possible_cybersecurity_vietnam_entry_level_count` | 0 — trong nhóm dấu hiệu trên, chưa thấy từ khóa cấp bậc đầu vào trong tiêu đề |
+| `title_keyword_without_explicit_vietnam_count` | 2 — tiêu đề khớp từ khóa nhưng chuỗi địa điểm không có dấu hiệu Việt Nam được script nhận diện; không tương đương tổng tin `geography = unknown` |
+| `pagination_complete` | `null` — chưa xác nhận |
+| `pagination_evidence` | `Greenhouse meta.total=489; received=489. Equality alone does not prove complete board coverage.` |
+| `errors` | `[]` |
+| URL của tin được nhận diện trong lượt chạy | Chưa có trong báo cáo; không mặc định đó là trang tin quan sát trước đây tại mục 4 |
+| Response fixture / JD được lưu | Chưa có fixture; báo cáo không kèm response nguồn hoặc JD |
+| Source Validation Status / Integration Decision | Giữ `candidate` / `pending_permission` |
+
+**Giới hạn diễn giải:** script chỉ xét tiêu đề và một chuỗi địa điểm, không xét JD. Kết quả bằng 0 ở nhóm đầu vào không chứng minh Axon không tuyển Intern/Fresher/Junior; số 1 ở nhóm cybersecurity tại Việt Nam chưa chứng minh một tin đã được xác nhận phù hợp. JSON parse được và các trường vượt kiểm tra cơ bản không đồng nghĩa toàn bộ schema, ID ổn định hoặc link bài gốc đã được xác minh.
+
+**Các phần còn thiếu:** quyền truy cập theo board và phạm vi lưu/hiển thị metadata, JD, fixture; tần suất cho phép; xác nhận phân trang/phạm vi; nhận diện và mở thủ công tin phù hợp; response mẫu được phép lưu; mẫu gán nhãn và quyết định adapter đầu tiên. Các cờ xác nhận trong lệnh không thay thế bằng chứng về quyền sử dụng. Lượt 2 chứng minh truy cập và xử lý response hoạt động tại thời điểm chạy, chưa làm Phase 0 PASS hoặc source thành `verified`.
+
 ## 8. Các rủi ro và cách xử lý
 
 | Rủi ro | Ảnh hưởng đến MVP | Quyết định |
@@ -264,11 +309,13 @@ Chỉ chuyển Phase 0 sang **PASS** khi đáp ứng tất cả điều kiện s
 
 **Tình trạng checklist ngày 08/11/2026:** Chưa PASS; chưa thực hiện smoke test API và chưa xác minh đầy đủ phạm vi sử dụng dữ liệu của bất kỳ board nào.
 
+**Cập nhật ngày 11/11/2026:** Axon đã có báo cáo GET thực tế thành công theo mục 7.4. Checklist vẫn **chưa PASS**: phần xác nhận phạm vi, quyền sử dụng, tin phù hợp có URL được kiểm tra, fixture và mẫu gán nhãn chưa đầy đủ. Các ô kết hợp nhiều điều kiện vẫn để trống vì chưa đạt trọn điều kiện; báo cáo số đếm heuristic chưa thay thế kết quả xác minh thủ công.
+
 ## 10. Đề xuất hành động tiếp theo
 
 1. **Ưu tiên SRC-01 Axon**, SRC-02 Amanotes và SRC-03 Picus để xác minh điều kiện sử dụng dữ liệu, vì đã có URL board và trang tin công khai.
 2. Tìm thêm các board doanh nghiệp **đang có vị trí SOC/Blue Team/Network Security Intern, Fresher hoặc Junior tại Việt Nam**. Các tin senior kể trên chỉ chứng minh sự hiện diện của chủ đề cybersecurity, chưa chứng minh giá trị tìm việc cho đối tượng mục tiêu.
-3. Sau khi quyền truy cập phù hợp được xác định, thực hiện **smoke test read-only** có ghi log kết quả cho đúng board, điền mẫu ở mục 7.3.
+3. Với **Axon**, tiếp tục từ kết quả mục 7.4: kiểm tra phạm vi API và xác định/mở thủ công tin có dấu hiệu phù hợp. Với **Amanotes/Picus**, sau khi quyền truy cập phù hợp được xác định, thực hiện smoke test read-only và ghi biên bản; không coi kết quả Axon là bằng chứng cho các nguồn này.
 4. Chuẩn bị mẫu gán nhãn theo `intent.md`, tách biệt bằng chứng nguồn thật với dữ liệu giả lập.
 5. Chỉ khi Phase 0 đạt các điều kiện, bao gồm một source `verified` và response mẫu được phép lưu, bắt đầu **Phase 1 — Core MVP**: xây adapter → chuẩn hóa/phân loại → SQLite → Streamlit → mở URL bài gốc.
 
@@ -300,4 +347,4 @@ Tin Intern/Fresher/Junior là ưu tiên tìm kiếm, không phải điều kiệ
 
 ---
 
-**Quyết định:** Giữ Phase 0 ở trạng thái `IN PROGRESS`. Không thêm bất kỳ source nào vào `sources.yaml` với `enabled: true` chỉ dựa trên bản khảo sát này. Tài liệu sẽ được cập nhật bằng bằng chứng smoke test thực tế và xác minh quyền sử dụng trước khi đổi trạng thái sang `verified`.
+**Quyết định cập nhật ngày 11/11/2026:** Giữ Phase 0 ở trạng thái `IN PROGRESS`. Axon đã có bằng chứng smoke test kỹ thuật nhưng vẫn là `candidate` / `pending_permission`. Không thêm bất kỳ source nào vào `sources.yaml` với `enabled: true` chỉ dựa trên bản khảo sát và số đếm này. Chỉ đổi sang `verified` sau khi các bằng chứng còn thiếu được hoàn tất.
