@@ -1,9 +1,9 @@
 # CyberJob Radar VN — Source Validation
 
 > **Dự án:** CyberJob Radar VN — MVP sản phẩm v1.0
-> **Phiên bản tài liệu:** 0.2 — cập nhật kết quả smoke test Axon ngày 11/11/2026
-> **Giai đoạn SDLC:** Phase 0 — Requirements Analysis & Feasibility / Source Validation  
-> **Trạng thái:** `IN PROGRESS` — **chưa có nguồn cụ thể đạt `verified`**  
+> **Phiên bản tài liệu:** 0.4 — đã gửi yêu cầu làm rõ Axon và rà soát điều kiện Amanotes ngày 12/11/2026
+> **Giai đoạn SDLC:** Phase 0 — Requirements Analysis & Feasibility / Source Validation
+> **Trạng thái:** `IN PROGRESS` — **chưa có nguồn cụ thể đạt `verified`**
 > **Phạm vi:** Công cụ cá nhân chạy cục bộ, tổng hợp tin tuyển dụng cybersecurity tại Việt Nam
 
 ## 1. Mục tiêu và nguyên tắc xác minh
@@ -51,19 +51,21 @@ Provider chỉ được đánh giá như công nghệ; không tự nhận trạn
 - Đã tìm được ví dụ trang tin Security có địa điểm Việt Nam của **Axon (Greenhouse), Amanotes (Lever), Picus (Lever)**.
 - Người dùng đã thực hiện smoke test HTTPX với Axon ngày **11/11/2026**, cung cấp báo cáo terminal: 1 GET, HTTP `200`, JSON hợp lệ và nhận 489 tin. Kết quả chi tiết tại mục 7.4; lượt cập nhật tài liệu này không chạy lại script hoặc gọi API.
 - **Chưa có báo cáo smoke test Amanotes hoặc Picus** trong bằng chứng được cung cấp.
-- **Chưa lưu response JSON nguồn làm fixture**. Axon trả `meta.total = 489`, khớp số tin nhận được; phân trang/phạm vi đầy đủ vẫn chưa xác nhận (`pagination_complete = null`).
+- Ngày 12/11/2026 đã gửi email hỏi quyền sử dụng Axon; Gmail xác nhận nhãn `SENT`, chưa có bằng chứng được cấp quyền. Rà soát Amanotes phát hiện quy định hạn chế thu thập tự động và yêu cầu cho phép bằng văn bản; tạm `blocked` cho phương thức tự động dự kiến, xem mục 7.7.
+- **Chưa lưu response JSON nguồn làm fixture**. Ngày 12/11/2026 đã đối chiếu tài liệu: endpoint List jobs trả toàn bộ bài đăng công khai của board, không mô tả phân trang cho endpoint này. Kết quả 489 tin khớp `meta.total` hỗ trợ tính đầy đủ của lượt 11/11; trường `pagination_complete = null` trong báo cáo gốc được giữ nguyên, đánh giá bổ sung tại mục 7.5.
+- Ngày 12/11/2026 đã mở bài gốc Axon `7823328003`, xác nhận chức danh Security Operations, địa điểm TP.HCM và nội dung liên quan cybersecurity. Chưa có dữ liệu để chứng minh đây chính là tin được đếm trong lượt API ngày 11/11.
 - **Chưa xác nhận đầy đủ quyền lưu/tái sử dụng mô tả JD** cho ứng dụng aggregator cá nhân; API có thể được thiết kế cho website tuyển dụng của chính doanh nghiệp.
 - **Chưa có nguồn được xác minh là đang có tin SOC/Blue Team Intern, Fresher hoặc Junior tại Việt Nam.** Các tin ví dụ chủ yếu yêu cầu kinh nghiệm.
 - Số lượng tin đang có trên các portal hoặc board thay đổi liên tục. **Không sử dụng số lượng tìm thấy trong lượt tìm kiếm làm số liệu kiểm thử API.**
 
-**Kết luận cập nhật ngày 11/11/2026:** `PARTIALLY VALIDATED`. Axon đã có bằng chứng truy cập và xử lý JSON thành công; chưa đạt điều kiện hoàn thành Phase 0 theo `intent.md`.
+**Kết luận cập nhật ngày 12/11/2026:** `PARTIALLY VALIDATED`. Axon có bằng chứng API thành công, bài gốc phù hợp và căn cứ về phạm vi endpoint; quyền sử dụng, tần suất và fixture/mẫu đánh giá vẫn chưa đầy đủ. Chưa đạt điều kiện hoàn thành Phase 0 theo `intent.md`.
 
 ## 3. Kết quả khảo sát tổng quan
 
 | Nguồn/nền tảng | Loại | Kết quả về dữ liệu | Cơ chế kỹ thuật | Source Validation Status | Integration Decision |
 |---|---|---|---|---|---|
 | Greenhouse | ATS provider | Có board Axon với tin Security tại TP.HCM | Job Board API, GET public theo `board_token` | Không áp dụng cho provider | `evaluate` — khảo sát từng board |
-| Lever | ATS provider | Có board Amanotes và Picus với tin liên quan tại Việt Nam | Postings API, JSON theo `site`, hỗ trợ phân trang | Không áp dụng cho provider | `evaluate` — khảo sát từng board |
+| Lever | ATS provider | Có ghi nhận tin liên quan tại Việt Nam trước đây; Amanotes hiện có rào cản quyền sử dụng | Postings API, JSON theo `site`, hỗ trợ phân trang | Không áp dụng cho provider | `evaluate` — kết quả provider không cấp quyền cho board Amanotes |
 | Recruitee | ATS provider | Có khả năng phát hành tin tuyển dụng qua Careers Site API | Token theo tài khoản doanh nghiệp; hạn đưa token vào request là 10/02/2027 | Không áp dụng cho provider | `pending_permission` — chưa có quyền/token được xác minh |
 | ITviec | Job portal | Có danh mục Information Security/Cybersecurity | Chưa xác minh API tìm việc dành cho aggregator; điều khoản hạn chế sao chép | `blocked` | `pending_permission` |
 | TopCV | Job portal | Có các trang/tin tuyển dụng ATTT | API ứng viên/aggregator và quyền tự động thu thập chưa được xác minh | `candidate` | `pending_permission` |
@@ -86,17 +88,17 @@ Các nhận xét về khả năng tích hợp chỉ là **kết quả đánh gi�
 | Board/website | https://job-boards.greenhouse.io/axon |
 | API mẫu theo tài liệu | `GET https://boards-api.greenhouse.io/v1/boards/axon/jobs?content=true` |
 | Endpoint đã smoke test | `GET https://boards-api.greenhouse.io/v1/boards/axon/jobs` — không có query parameter, không yêu cầu `content=true` |
-| Trang tin quan sát | https://job-boards.greenhouse.io/axon/jobs/7823328003 |
+| Trang tin đã mở và đối chiếu ngày 12/11/2026 | https://job-boards.greenhouse.io/axon/jobs/7823328003 — ID bài đăng từ URL: `7823328003` |
 | Ví dụ tin | Senior Security Operations Engineer I |
-| Địa điểm quan sát | Ho Chi Minh City, Vietnam |
+| Địa điểm quan sát | Ho Chi Minh City, Ho Chi Minh City, Vietnam; nội dung xác nhận làm việc hybrid tại văn phòng TP.HCM |
 | Cấp bậc/mức phù hợp | Senior; phù hợp để kiểm thử nhận diện lĩnh vực, **không phải Intern/Junior** |
-| Phân trang/phạm vi thực tế | Nhận 489 tin trong 1 response, khớp `meta.total = 489`; chưa xác nhận toàn bộ phạm vi board, `pagination_complete = null` |
+| Phân trang/phạm vi | Tài liệu List jobs mô tả toàn bộ bài đăng của board, không nêu `page`/`skip`/`limit`; kết hợp báo cáo 489/489 để hỗ trợ tính đầy đủ tại lượt chạy. Báo cáo gốc vẫn giữ `pagination_complete = null`; không phải toàn bộ vị trí nội bộ hoặc toàn thị trường |
 | Dữ liệu API thực nhận | Báo cáo ghi JSON hợp lệ, 489 ID phân biệt; không phát hiện thiếu/sai `id`, `title`, `location.name`, `absolute_url` theo các kiểm tra hiện tại của script. `content`, `updated_at`, độ ổn định ID qua nhiều lần và nội dung bài gốc chưa được xác minh bởi báo cáo |
-| Quyền lưu metadata/JD | **Chưa xác nhận** quyền sử dụng với aggregator bên thứ ba |
+| Quyền lưu metadata/JD | **Chưa xác nhận** cho aggregator cá nhân; đã rà soát tài liệu Greenhouse và điều khoản Axon, ghi nhận ranh giới áp dụng chưa rõ tại mục 7.6 |
 | Tần suất/rate-limit được phép | **Chưa xác nhận cho board này**; không suy đoán từ tài liệu của bên thứ ba |
 | Response fixture được phép lưu | Chưa có |
 | Source Validation Status | `candidate` |
-| Integration Decision | `pending_permission` — đã có smoke test kỹ thuật; còn cần xác minh quyền sử dụng dữ liệu và phạm vi đầy đủ trước tích hợp |
+| Integration Decision | `pending_permission` — có bằng chứng kỹ thuật và bài gốc; chờ làm rõ quyền sử dụng dữ liệu và tần suất trước tích hợp |
 
 **Bằng chứng:** [Trang tin Axon](https://job-boards.greenhouse.io/axon/jobs/7823328003); [Greenhouse Job Board API](https://docs.greenhouse.io/job-board); [Greenhouse API overview](https://support.greenhouse.io/hc/en-us/articles/10568627186203-Greenhouse-API-overview).
 
@@ -109,6 +111,7 @@ Các nhận xét về khả năng tích hợp chỉ là **kết quả đánh gi�
 | `provider` | Lever |
 | `external_key` dự kiến | `amanotes` |
 | Board/website | https://jobs.lever.co/amanotes |
+| Careers chính thức hiện được liên kết | `https://www.careers.amanotes.com` — từ website Amanotes; chưa xác nhận backend/provider của trang này bằng kiểm thử |
 | API mẫu theo tài liệu | `GET https://api.lever.co/v0/postings/amanotes?mode=json` |
 | Trang tin quan sát | https://jobs.lever.co/amanotes/a3451dde-d684-43c0-81e7-d001d7f93e79 |
 | Ví dụ tin | Site Reliability Engineer (GCP Experience), có nhiệm vụ Cloud Security |
@@ -116,11 +119,11 @@ Các nhận xét về khả năng tích hợp chỉ là **kết quả đánh gi�
 | Cấp bậc/mức phù hợp | Tin yêu cầu 3+ năm; **không phải Intern/Junior**; chức danh không chứa từ `security` nhưng JD có nhiệm vụ bảo mật |
 | Phân trang/phạm vi thực tế | **Chưa kiểm chứng**; Lever có `skip`/`limit` theo tài liệu |
 | Dữ liệu API thực nhận | **Chưa kiểm chứng** |
-| Quyền lưu metadata/JD | **Chưa xác nhận** |
+| Quyền lưu metadata/JD | Chưa được cấp quyền; Community Guidelines yêu cầu cho phép bằng văn bản khi xây công cụ dùng dữ liệu/nội dung, có giới hạn thu thập tự động; xem mục 7.7 |
 | Tần suất/rate-limit được phép | Chưa xác nhận theo nguồn |
 | Response fixture được phép lưu | Chưa có |
-| Source Validation Status | `candidate` |
-| Integration Decision | `pending_permission` — Ưu tiên cho phép thử bộ phân loại theo nội dung JD |
+| Source Validation Status | `blocked` cho phương thức thu thập tự động dự kiến — cập nhật 12/11/2026, có thể đánh giá lại khi có xác nhận phù hợp |
+| Integration Decision | `pending_permission` — chưa được coi là nguồn thay thế sẵn sàng; chưa gọi Postings API hoặc bật lịch chạy |
 
 **Bằng chứng:** [Board Amanotes](https://jobs.lever.co/amanotes); [Trang tin SRE](https://jobs.lever.co/amanotes/a3451dde-d684-43c0-81e7-d001d7f93e79); [Lever Postings API](https://github.com/lever/postings-api).
 
@@ -158,6 +161,7 @@ Các nhận xét về khả năng tích hợp chỉ là **kết quả đánh gi�
 | Glints | https://glints.com/vn/en/about/terms | Cấm screen scraping, data mining, robots để tái tạo dữ liệu trên website khác nếu thiếu văn bản đồng ý | `blocked` | `disabled` |
 | CareerViet | https://careerviet.vn/en/jobseekers/use | Điều khoản hạn chế sử dụng công cụ tự động tìm kiếm/điều hướng ngoài công cụ được cung cấp | `blocked` | `disabled` |
 | Recruitee Careers Site API | https://docs.recruitee.com/reference/authentication-1 | API của provider có tài liệu chính thức; dự án chưa có quyền/token được xác minh | Không áp dụng cho provider/API | `pending_permission` |
+| Amanotes Careers | https://www.amanotes.com/community-guidelines | Mục về scraping/data mining hạn chế thu thập tự động, yêu cầu cho phép bằng văn bản khi dùng nội dung/dữ liệu để xây công cụ; phạm vi riêng cho board Lever cần được làm rõ | `blocked` cho phương thức dự kiến | `pending_permission` |
 
 Tài liệu Recruitee mô tả xác thực qua header `X-Careers-Sites-Token`, với token theo từng tài khoản doanh nghiệp, và nêu hạn đưa token vào request là **10/02/2027**. Thông tin này không chứng minh mọi request đã bắt buộc token vào ngày khảo sát 08/11/2026. Dự án chưa xác minh được quyền hoặc token để tích hợp; không bật API dựa trên khả năng truy cập kỹ thuật.
 
@@ -281,6 +285,85 @@ python .\scripts\smoke_test_public_apis.py --confirm-access --confirm-report-per
 
 **Các phần còn thiếu:** quyền truy cập theo board và phạm vi lưu/hiển thị metadata, JD, fixture; tần suất cho phép; xác nhận phân trang/phạm vi; nhận diện và mở thủ công tin phù hợp; response mẫu được phép lưu; mẫu gán nhãn và quyết định adapter đầu tiên. Các cờ xác nhận trong lệnh không thay thế bằng chứng về quyền sử dụng. Lượt 2 chứng minh truy cập và xử lý response hoạt động tại thời điểm chạy, chưa làm Phase 0 PASS hoặc source thành `verified`.
 
+Danh sách trên phản ánh trạng thái ngày 11/11/2026. Bằng chứng bổ sung ngày 12/11/2026 được đánh giá tại các mục sau, không sửa dữ liệu của lượt chạy gốc.
+
+### 7.5. Đối chiếu bài gốc và phạm vi Axon — ngày 12/11/2026
+
+Đã mở trang bài gốc và tài liệu chính thức bằng công cụ duyệt web; không gửi đơn, không chạy lại script và không tải response API mới. Mốc ghi nhận sau khi mở trang: `2026-11-12T08:17:58+00:00` / `2026-11-12T15:17:58+07:00`.
+
+| Bằng chứng bài gốc | Ghi nhận |
+|---|---|
+| URL đã mở | [Bài đăng Axon](https://job-boards.greenhouse.io/axon/jobs/7823328003) |
+| ID bài đăng | `7823328003`, lấy từ đường dẫn bài gốc; chưa đối chiếu với ID trong response gốc ngày 11/11 |
+| Chức danh | Senior Security Operations Engineer I |
+| Địa điểm hiển thị | Ho Chi Minh City, Ho Chi Minh City, Vietnam |
+| Hình thức làm việc | Hybrid, có làm việc tại văn phòng TP.HCM; không diễn giải là remote toàn cầu |
+| Nhãn đề xuất sau đọc trang | `relevance = related`, `geography = vietnam`, `seniority = other` (Senior), `work_mode = hybrid` |
+| Căn cứ lĩnh vực (tóm tắt) | Nhiệm vụ liên quan công cụ bảo mật, quản lý lỗ hổng, kiểm tra an toàn trong CI/CD và xử lý sự cố |
+| Trạng thái quan sát | Trang hiển thị JD và nút ứng tuyển tại thời điểm mở; không bảo đảm doanh nghiệp vẫn nhận hồ sơ sau đó |
+
+Đây là xác nhận độc lập một tin phù hợp, không phải khôi phục danh tính của tin được script đếm ngày 11/11. Báo cáo khi đó không có ID/URL chi tiết nên chưa thể nối hai bằng chứng thành cùng một bản ghi.
+
+**Phạm vi endpoint:** [Greenhouse Job Board API, mục List jobs](https://docs.greenhouse.io/job-board#list-jobs) mô tả endpoint `GET /v1/boards/{board_token}/jobs` trả danh sách tất cả bài đăng của board. Mục này chỉ liệt kê `content` là query parameter tùy chọn, không có cơ chế phân trang `page`/`skip`/`limit`; tham số phân trang ở các endpoint khác trong tài liệu không áp dụng mặc nhiên cho List jobs.
+
+**Đánh giá:** đối chiếu tài liệu với báo cáo 1 response, 489 ID phân biệt và `meta.total = 489` cho phép ghi nhận phạm vi danh sách công khai đã được hỗ trợ bằng tài liệu và số liệu tổng hợp của lượt 11/11. Không còn yêu cầu thử thêm trang giả định. Tuy nhiên, không có response gốc để kiểm toán lại từng phần tử; không có bằng chứng snapshot bất biến, vị trí nội bộ hoặc mọi tin của doanh nghiệp ngoài board `axon`. Không thay `pagination_complete` trong báo cáo gốc thành kết quả mà script chưa xuất ra.
+
+### 7.6. Quyền sử dụng, fixture và mẫu gán nhãn
+
+Đã rà soát các nguồn chính thức ngày 12/11/2026:
+
+| Nguồn | Phát hiện và giới hạn kết luận |
+|---|---|
+| [Greenhouse Job Board API](https://docs.greenhouse.io/job-board) | GET công khai không cần xác thực. Đây là căn cứ phương thức đọc, chưa xác nhận riêng quyền lưu lâu dài hoặc tái xuất bản nội dung Axon. |
+| [Greenhouse API overview](https://support.greenhouse.io/hc/en-us/articles/10568627186203-Greenhouse-API-overview), mục Job Board API | Có thể áp dụng rate limit vì bảo mật/lưu lượng; không nêu hạn mức GET cụ thể cho board Axon. Không suy ra “không giới hạn” hoặc “mỗi 12 giờ đã được chấp thuận”. |
+| [Axon Terms of Use](https://www.axon.com/terms-of-use), các mục Permitted Uses, Prohibited Uses và Links to Other Sites | Cho phép một số cách dùng cá nhân tạm thời, có giới hạn với sao chép/thu thập tự động, tải bất hợp lý và phân phối lại. Chưa xác định được cách áp dụng đầy đủ các điều khoản website Axon cho endpoint Greenhouse được công bố riêng; không kết luận mọi GET công khai bị cấm hoặc aggregator đã được cấp phép. |
+| [Greenhouse Legal](https://www.greenhouse.com/legal) và [MSA](https://www.greenhouse.com/master-subscription-agreement), mục 2, 3(c), 4(d) | MSA điều chỉnh quan hệ thuê bao, nêu JD thuộc Customer Data và quyền cung cấp dịch vụ của Greenhouse. Không coi thỏa thuận dành cho khách hàng là giấy phép lưu/hiển thị nội dung cho dự án này. |
+
+**Quyết định sử dụng dữ liệu:** chưa đủ căn cứ để xác nhận `full`, `excerpt` hoặc quyền lưu metadata tự động dài hạn. Chưa lưu JD/response thật làm fixture hoặc công bố dữ liệu nguồn vào Git. Các ghi nhận tối thiểu ở mục 7.5 phục vụ đối chiếu nguồn; không phải giấy phép cho lưu trữ hàng loạt. Giữ source `candidate`, quyết định `pending_permission` vì phạm vi áp dụng chưa rõ; chưa có căn cứ kết luận cấm riêng endpoint API để chuyển source thành `blocked`.
+
+**Chuẩn bị fixture sau khi quyền được làm rõ:** dùng một response thật từ đúng endpoint đã được chấp thuận; ghi thời điểm nhận, endpoint/query, quyền cho phép, phần dữ liệu giữ lại và có được commit hay chỉ lưu cục bộ. Nếu chỉ cho phép trích metadata thì fixture phải ghi rõ đã rút gọn, không gắn nhãn raw response đầy đủ. Không tái tạo JSON từ trang HTML hoặc số liệu 489 rồi coi đó là response thật. Hiện chưa tạo fixture vì thiếu căn cứ lưu; điều kiện này chưa đạt.
+
+**Chuẩn bị mẫu gán nhãn:** mục 7.5 là một ứng viên tham chiếu `related`/`vietnam`/`other`/`hybrid`; chưa xuất thành dữ liệu huấn luyện/kiểm thử và không đủ để đo precision/recall. Khi có quyền lưu, mỗi mẫu cần `source`, `job_id`, `url`, thời điểm quan sát, phạm vi nội dung được phép dùng, nhãn kỳ vọng và lý do; chia riêng bộ tinh chỉnh với bộ kiểm thử không trùng/gần trùng. Theo đặc tả, bộ kiểm thử cần ít nhất 40 tin có kết luận rõ (ít nhất 20 liên quan và 20 không liên quan), kèm mẫu mơ hồ riêng. Bộ dữ liệu có nội dung thực chưa được chuẩn bị đầy đủ; không dùng mẫu tổng hợp để thay bằng chứng nguồn thật.
+
+**Yêu cầu làm rõ Axon (đã gửi):** [Axon Legal](https://www.axon.com/legal) công bố `ip@axon.com` cho câu hỏi sở hữu trí tuệ. Email đã gửi đến địa chỉ này qua Gmail ngày **12/11/2026**, yêu cầu chuyển tới đầu mối careers/API phù hợp. Gmail trả kết quả thành công với nhãn `SENT`; chưa xác nhận phát tới hộp thư đích hoặc có phản hồi cấp quyền. Mốc ghi nhận sau khi gửi: `2026-11-12T08:24:27+00:00` / `2026-11-12T15:24:27+07:00`. Nội dung cốt lõi đã gửi như dưới đây; thư có thêm lời chào, đề nghị chuyển đúng bộ phận và chữ ký cá nhân. Không lưu địa chỉ email cá nhân của người gửi vào tài liệu repository.
+
+```text
+Subject: Clarification on personal use of Axon's public Greenhouse job board API
+
+I am building a local, single-user, non-commercial tool to track cybersecurity
+job opportunities in Vietnam. I would like to use only public GET requests to:
+https://boards-api.greenhouse.io/v1/boards/axon/jobs
+
+Could you clarify whether I may:
+1. Fetch the public listings once every 12 hours (proposed, not yet scheduled).
+2. Retain job IDs, titles, locations and original posting URLs locally.
+3. Display those fields in a private localhost dashboard linking to Axon's posts.
+4. Save a small real API response sample for local automated tests, and whether
+   that sample may be committed to a public repository or must remain private.
+5. Retain any job description text, or whether it should be excluded entirely.
+
+Please advise on applicable terms, request limits, attribution, retention/deletion
+requirements and any separate permission needed from Greenhouse. I do not intend
+to submit applications automatically or publish a public copy of the job board.
+```
+
+Đây là câu hỏi về phạm vi sử dụng cần được làm rõ, không phải xác nhận đã được cấp quyền. Chưa thay đổi cấu hình chạy định kỳ. Chờ phản hồi Axon; không gửi lặp yêu cầu này trong khi chưa có lý do theo dõi tiếp. Vấn đề kỹ thuật về hạn mức có thể cần Axon chuyển tiếp hoặc làm rõ thêm với Greenhouse.
+
+### 7.7. Rà soát Amanotes như nguồn lựa chọn — ngày 12/11/2026
+
+| Bằng chứng chính thức | Kết quả rà soát |
+|---|---|
+| [Amanotes homepage](https://www.amanotes.com/) | Liên kết Careers hiện trỏ tới `www.careers.amanotes.com`; không mặc định mọi tin hiện tại được cấp qua board Lever cũ. |
+| [Amanotes Careers](https://careers.amanotes.com/) | Trang careers mở được bằng công cụ duyệt web và công bố `talents@amanotes.com`; đây là đầu mối tuyển dụng, chưa phải xác nhận quyền sử dụng API. |
+| [Amanotes Terms of Service](https://www.amanotes.com/terms-and-conditions), mục 17 | Công bố `support@amanotes.com` cho câu hỏi về điều khoản; chưa có phản hồi hoặc giấy phép cho dự án. |
+| [Community Guidelines](https://www.amanotes.com/community-guidelines), mục về scraping/data mining | Nêu hạn chế thu thập dữ liệu tự động từ website/dịch vụ và yêu cầu cho phép bằng văn bản khi xây công cụ dùng nội dung/dữ liệu Amanotes. Không tự suy ra ngoại lệ cho GET của board Lever; cần xác nhận riêng phạm vi và phương thức API dự kiến. |
+| [Lever Postings API](https://github.com/lever/postings-api), Get a list of job postings | Có `skip`/`limit` và định dạng JSON. Tài liệu chỉ chứng minh cơ chế; giới hạn được nêu ở POST Application Rate Limit áp dụng cho nộp đơn, không phải căn cứ hạn mức GET. |
+| Truy cập `https://jobs.lever.co/amanotes` qua công cụ duyệt web | Công cụ báo HTTP `403`; không thử vượt chặn hoặc truy cập lại bằng phương thức khác. Đây không phải smoke test HTTPX của endpoint `api.lever.co`, không chứng minh API bị đóng, tin đã hết hoặc không có việc phù hợp. |
+
+**Kết luận vận hành:** chuyển SRC-02 từ `candidate` sang `blocked` cho phương thức thu thập tự động dự kiến, giữ Integration Decision `pending_permission`. Đây là quyết định tránh tích hợp khi thiếu chấp thuận theo chính sách đã đọc, không phải kết luận pháp lý rằng mọi truy cập bằng trình duyệt hoặc mọi GET Lever đều bị cấm. Chưa có bằng chứng quyền lưu metadata/JD, tần suất hoặc response fixture; không coi Amanotes là nguồn thay thế đã sẵn sàng.
+
+**Để đánh giá lại:** cần xác nhận bằng văn bản từ Amanotes về việc đọc board/API cụ thể, dữ liệu được giữ, hiển thị cục bộ, tần suất và quyền lưu fixture. Đầu mối điều khoản là `support@amanotes.com`; có thể yêu cầu chuyển tới nhóm careers. Chưa gửi email cho Amanotes trong lần rà soát này. Chỉ kiểm thử API và tạo fixture sau khi phạm vi phù hợp được làm rõ.
+
 ## 8. Các rủi ro và cách xử lý
 
 | Rủi ro | Ảnh hưởng đến MVP | Quyết định |
@@ -297,11 +380,11 @@ python .\scripts\smoke_test_public_apis.py --confirm-access --confirm-report-per
 
 Chỉ chuyển Phase 0 sang **PASS** khi đáp ứng tất cả điều kiện sau:
 
-- [ ] Đã khảo sát tối thiểu **3 nguồn ứng viên cụ thể** và có hồ sơ/bằng chứng (nếu không tìm đủ thì nêu rõ, chưa tự coi đạt).
+- [x] Đã khảo sát tối thiểu **3 nguồn ứng viên cụ thể** và có hồ sơ/bằng chứng: Axon, Amanotes, Picus tại mục 4. Đây là điều kiện khảo sát, không yêu cầu hoặc chứng minh cả ba đã smoke test/verified.
 - [ ] Ít nhất **1 source** đạt `verified`, không chỉ provider có tài liệu API.
 - [ ] Có căn cứ rõ ràng về quyền truy cập **và phạm vi dữ liệu được phép lưu/hiển thị**.
-- [ ] Có smoke test hợp lệ với endpoint thật, JSON/HTML được phân tích, phân trang/phạm vi được kiểm tra.
-- [ ] Có ít nhất một tin thực tế liên quan cybersecurity **tại Việt Nam** với URL gốc mở được.
+- [ ] Có smoke test hợp lệ với endpoint thật, JSON/HTML được phân tích, phân trang/phạm vi được kiểm tra. Axon đã đạt phần kỹ thuật và đối chiếu phạm vi tại mục 7.4–7.5; vẫn chờ làm rõ đầy đủ điều kiện sử dụng trước khi đánh dấu đạt trọn điều kiện.
+- [x] Có ít nhất một tin thực tế liên quan cybersecurity **tại Việt Nam** với URL gốc mở được: Axon `7823328003`, đối chiếu ngày 12/11/2026 tại mục 7.5. Không xác nhận đây là chính tin script đếm ngày 11/11.
 - [ ] Đã ghi số tin quan sát, số tin cybersecurity tại Việt Nam, tin đầu vào và những trường dữ liệu thiếu.
 - [ ] Có response mẫu từ nguồn thật được phép lưu để kiểm thử. Nếu chưa có, ghi rõ rào cản và **Phase 0 chưa PASS**; việc ghi rào cản không thay thế fixture.
 - [ ] Chuẩn bị mẫu gán nhãn phục vụ đánh giá classifier theo `intent.md`; xác minh quyền lưu khi dùng dữ liệu từ nguồn thật và không coi mẫu giả lập là bằng chứng nguồn.
@@ -311,12 +394,16 @@ Chỉ chuyển Phase 0 sang **PASS** khi đáp ứng tất cả điều kiện s
 
 **Cập nhật ngày 11/11/2026:** Axon đã có báo cáo GET thực tế thành công theo mục 7.4. Checklist vẫn **chưa PASS**: phần xác nhận phạm vi, quyền sử dụng, tin phù hợp có URL được kiểm tra, fixture và mẫu gán nhãn chưa đầy đủ. Các ô kết hợp nhiều điều kiện vẫn để trống vì chưa đạt trọn điều kiện; báo cáo số đếm heuristic chưa thay thế kết quả xác minh thủ công.
 
+**Cập nhật ngày 12/11/2026:** đã hoàn thành đối chiếu bài gốc và đánh giá phạm vi endpoint dựa trên tài liệu cùng báo cáo 11/11. Phase 0 tiếp tục **chưa PASS** do quyền lưu/hiển thị, tần suất, fixture được phép lưu, bộ mẫu gán nhãn và quyết định adapter còn thiếu. Greenhouse là phương án kỹ thuật ưu tiên có điều kiện cho Axon; chưa phải quyết định tích hợp được phê duyệt.
+
+**Theo dõi tiếp ngày 12/11/2026:** email xin làm rõ Axon đã gửi qua Gmail; việc gửi không đồng nghĩa được cấp quyền. Amanotes được chuyển `blocked` / `pending_permission` cho phương thức tự động dự kiến sau rà soát chính sách; chưa có nguồn bổ sung đạt `verified`. Tiếp tục chờ bằng chứng trước khi tạo fixture hoặc chuyển sang Phase 1.
+
 ## 10. Đề xuất hành động tiếp theo
 
 1. **Ưu tiên SRC-01 Axon**, SRC-02 Amanotes và SRC-03 Picus để xác minh điều kiện sử dụng dữ liệu, vì đã có URL board và trang tin công khai.
 2. Tìm thêm các board doanh nghiệp **đang có vị trí SOC/Blue Team/Network Security Intern, Fresher hoặc Junior tại Việt Nam**. Các tin senior kể trên chỉ chứng minh sự hiện diện của chủ đề cybersecurity, chưa chứng minh giá trị tìm việc cho đối tượng mục tiêu.
-3. Với **Axon**, tiếp tục từ kết quả mục 7.4: kiểm tra phạm vi API và xác định/mở thủ công tin có dấu hiệu phù hợp. Với **Amanotes/Picus**, sau khi quyền truy cập phù hợp được xác định, thực hiện smoke test read-only và ghi biên bản; không coi kết quả Axon là bằng chứng cho các nguồn này.
-4. Chuẩn bị mẫu gán nhãn theo `intent.md`, tách biệt bằng chứng nguồn thật với dữ liệu giả lập.
+3. Với **Axon**, theo dõi phản hồi thư đã gửi tại mục 7.6 và ghi đúng phạm vi được chấp thuận nếu có. Với **Amanotes**, cần làm rõ chấp thuận bằng văn bản theo mục 7.7; chưa chạy API trong lúc thiếu quyền. Với **Picus**, vẫn cần xác minh quyền trước thử nghiệm. Không coi kết quả Axon là bằng chứng cho các nguồn khác.
+4. Sau khi có căn cứ lưu phù hợp, tạo fixture thật và bộ mẫu gán nhãn theo kế hoạch mục 7.6 và `docs/intent.md`, tách biệt bằng chứng nguồn thật với dữ liệu giả lập.
 5. Chỉ khi Phase 0 đạt các điều kiện, bao gồm một source `verified` và response mẫu được phép lưu, bắt đầu **Phase 1 — Core MVP**: xây adapter → chuẩn hóa/phân loại → SQLite → Streamlit → mở URL bài gốc.
 
 Tin Intern/Fresher/Junior là ưu tiên tìm kiếm, không phải điều kiện bắt buộc để Phase 0 PASS. Đánh giá mức hữu ích của nguồn được báo cáo riêng sau khi dùng thử 7 ngày theo `intent.md`.
@@ -327,6 +414,8 @@ Tin Intern/Fresher/Junior là ưu tiên tìm kiếm, không phải điều kiệ
 
 - [Greenhouse — Job Board API](https://docs.greenhouse.io/job-board)
 - [Greenhouse — API overview](https://support.greenhouse.io/hc/en-us/articles/10568627186203-Greenhouse-API-overview)
+- [Greenhouse — Legal](https://www.greenhouse.com/legal)
+- [Greenhouse — Master Subscription Agreement](https://www.greenhouse.com/master-subscription-agreement)
 - [Lever — Postings API](https://github.com/lever/postings-api)
 - [Recruitee — API documentation](https://support.recruitee.com/en/articles/1066282-api-documentation)
 - [Recruitee — Careers Site API authentication](https://docs.recruitee.com/reference/authentication-1)
@@ -339,6 +428,11 @@ Tin Intern/Fresher/Junior là ưu tiên tìm kiếm, không phải điều kiệ
 
 **Điều khoản/chính sách nguồn khác:**
 
+- [Axon — Terms of Use](https://www.axon.com/terms-of-use)
+- [Axon — Legal và đầu mối câu hỏi sở hữu trí tuệ](https://www.axon.com/legal)
+- [Amanotes — Terms of Service](https://www.amanotes.com/terms-and-conditions)
+- [Amanotes — Community Guidelines](https://www.amanotes.com/community-guidelines)
+- [Amanotes — Careers chính thức](https://careers.amanotes.com/)
 - [ITviec — Thỏa thuận sử dụng](https://itviec.com/blog/terms-conditions-vn/)
 - [TopCV — Điều khoản dịch vụ](https://www.topcv.vn/terms-of-service)
 - [LinkedIn — Prohibited software and extensions](https://www.linkedin.com/help/linkedin/answer/a1341387/)
@@ -347,4 +441,4 @@ Tin Intern/Fresher/Junior là ưu tiên tìm kiếm, không phải điều kiệ
 
 ---
 
-**Quyết định cập nhật ngày 11/11/2026:** Giữ Phase 0 ở trạng thái `IN PROGRESS`. Axon đã có bằng chứng smoke test kỹ thuật nhưng vẫn là `candidate` / `pending_permission`. Không thêm bất kỳ source nào vào `sources.yaml` với `enabled: true` chỉ dựa trên bản khảo sát và số đếm này. Chỉ đổi sang `verified` sau khi các bằng chứng còn thiếu được hoàn tất.
+**Quyết định cập nhật ngày 12/11/2026:** Giữ Phase 0 ở trạng thái `IN PROGRESS`. Axon có smoke test kỹ thuật, bài gốc phù hợp và căn cứ về phạm vi API, nhưng vẫn là `candidate` / `pending_permission` trong lúc chờ phản hồi yêu cầu quyền đã gửi. Amanotes là `blocked` / `pending_permission` cho phương thức tự động dự kiến theo rà soát mục 7.7. Chưa tạo fixture nguồn thật khi quyền lưu chưa được xác minh. Không bật source hoặc chọn adapter chính thức trước khi các điều kiện còn thiếu hoàn tất.
