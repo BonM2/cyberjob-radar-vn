@@ -1,7 +1,7 @@
 # CyberJob Radar VN — Source Validation
 
 > **Dự án:** CyberJob Radar VN — MVP sản phẩm v1.0
-> **Phiên bản tài liệu:** 0.4 — đã gửi yêu cầu làm rõ Axon và rà soát điều kiện Amanotes ngày 12/11/2026
+> **Phiên bản tài liệu:** 0.6 — mở rộng khảo sát 19 nguồn/site, làm rõ LinkedIn và nguồn doanh nghiệp ngày 13/11/2026; giữ MVP sản phẩm v1.0
 > **Giai đoạn SDLC:** Phase 0 — Requirements Analysis & Feasibility / Source Validation
 > **Trạng thái:** `IN PROGRESS` — **chưa có nguồn cụ thể đạt `verified`**
 > **Phạm vi:** Công cụ cá nhân chạy cục bộ, tổng hợp tin tuyển dụng cybersecurity tại Việt Nam
@@ -52,11 +52,13 @@ Provider chỉ được đánh giá như công nghệ; không tự nhận trạn
 - Người dùng đã thực hiện smoke test HTTPX với Axon ngày **11/11/2026**, cung cấp báo cáo terminal: 1 GET, HTTP `200`, JSON hợp lệ và nhận 489 tin. Kết quả chi tiết tại mục 7.4; lượt cập nhật tài liệu này không chạy lại script hoặc gọi API.
 - **Chưa có báo cáo smoke test Amanotes hoặc Picus** trong bằng chứng được cung cấp.
 - Ngày 12/11/2026 đã gửi email hỏi quyền sử dụng Axon; Gmail xác nhận nhãn `SENT`, chưa có bằng chứng được cấp quyền. Rà soát Amanotes phát hiện quy định hạn chế thu thập tự động và yêu cầu cho phép bằng văn bản; tạm `blocked` cho phương thức tự động dự kiến, xem mục 7.7.
+- Ngày 13/11/2026 đã rà soát Picus: careers chính thức liên kết board Lever; bài gốc và board trả 403 qua công cụ duyệt web, trong khi kết quả tìm kiếm vẫn có bản lập chỉ mục. Điều khoản yêu cầu quyền bằng văn bản cho thu thập có hệ thống; tạm `blocked` cho phương thức tự động dự kiến, xem mục 7.8. Không gọi Postings API hoặc chạy smoke test mới.
 - **Chưa lưu response JSON nguồn làm fixture**. Ngày 12/11/2026 đã đối chiếu tài liệu: endpoint List jobs trả toàn bộ bài đăng công khai của board, không mô tả phân trang cho endpoint này. Kết quả 489 tin khớp `meta.total` hỗ trợ tính đầy đủ của lượt 11/11; trường `pagination_complete = null` trong báo cáo gốc được giữ nguyên, đánh giá bổ sung tại mục 7.5.
 - Ngày 12/11/2026 đã mở bài gốc Axon `7823328003`, xác nhận chức danh Security Operations, địa điểm TP.HCM và nội dung liên quan cybersecurity. Chưa có dữ liệu để chứng minh đây chính là tin được đếm trong lượt API ngày 11/11.
 - **Chưa xác nhận đầy đủ quyền lưu/tái sử dụng mô tả JD** cho ứng dụng aggregator cá nhân; API có thể được thiết kế cho website tuyển dụng của chính doanh nghiệp.
 - **Chưa có nguồn được xác minh là đang có tin SOC/Blue Team Intern, Fresher hoặc Junior tại Việt Nam.** Các tin ví dụ chủ yếu yêu cầu kinh nghiệm.
 - Số lượng tin đang có trên các portal hoặc board thay đổi liên tục. **Không sử dụng số lượng tìm thấy trong lượt tìm kiếm làm số liệu kiểm thử API.**
+- Mở rộng ngày **13/11/2026**: danh mục khảo sát gồm **10 portal và 9 nguồn doanh nghiệp**, tính cả ba nguồn trước đây; kết quả bổ sung tại mục 7.9. Độ sâu khác nhau: có nguồn đọc được bài gốc, có nguồn chỉ đọc được điều khoản/bản lập chỉ mục, có trang trả lỗi. Đây là phạm vi đã khảo sát, **không phải toàn bộ nguồn trên Internet hoặc 19 nguồn đã hoàn tất xác minh**. Không chạy smoke test mới, dò endpoint nội bộ, đăng nhập, gửi email mới hoặc lưu response/JD làm fixture.
 
 **Kết luận cập nhật ngày 12/11/2026:** `PARTIALLY VALIDATED`. Axon có bằng chứng API thành công, bài gốc phù hợp và căn cứ về phạm vi endpoint; quyền sử dụng, tần suất và fixture/mẫu đánh giá vẫn chưa đầy đủ. Chưa đạt điều kiện hoàn thành Phase 0 theo `intent.md`.
 
@@ -67,13 +69,22 @@ Provider chỉ được đánh giá như công nghệ; không tự nhận trạn
 | Greenhouse | ATS provider | Có board Axon với tin Security tại TP.HCM | Job Board API, GET public theo `board_token` | Không áp dụng cho provider | `evaluate` — khảo sát từng board |
 | Lever | ATS provider | Có ghi nhận tin liên quan tại Việt Nam trước đây; Amanotes hiện có rào cản quyền sử dụng | Postings API, JSON theo `site`, hỗ trợ phân trang | Không áp dụng cho provider | `evaluate` — kết quả provider không cấp quyền cho board Amanotes |
 | Recruitee | ATS provider | Có khả năng phát hành tin tuyển dụng qua Careers Site API | Token theo tài khoản doanh nghiệp; hạn đưa token vào request là 10/02/2027 | Không áp dụng cho provider | `pending_permission` — chưa có quyền/token được xác minh |
+| SmartRecruiters | ATS provider | Có tin Bosch trên miền tuyển dụng của provider | Tài liệu public Posting API mô tả GET theo doanh nghiệp, `limit`/`offset`; chưa kiểm thử board Bosch hoặc xác minh quyền dùng | Không áp dụng cho provider | `evaluate` — không coi tài liệu API là giấy phép aggregator |
+| Ashby | ATS provider | Có tài liệu Job Postings API; chưa xác định board có tin cybersecurity Việt Nam trong lượt này | GET theo tên board; tài liệu hướng tới careers của chính doanh nghiệp | Không áp dụng cho provider | `evaluate` — chưa có source cụ thể để tích hợp |
 | ITviec | Job portal | Có danh mục Information Security/Cybersecurity | Chưa xác minh API tìm việc dành cho aggregator; điều khoản hạn chế sao chép | `blocked` | `pending_permission` |
 | TopCV | Job portal | Có các trang/tin tuyển dụng ATTT | API ứng viên/aggregator và quyền tự động thu thập chưa được xác minh | `candidate` | `pending_permission` |
 | LinkedIn | Job portal | Có các danh mục việc làm Security tại Việt Nam | Chính sách cấm scraping/các bot không được phép | `blocked` | `disabled` |
 | Glints | Job portal | Có nền tảng tuyển dụng tại Việt Nam | Điều khoản hạn chế screen scraping/robots khi thiếu chấp thuận bằng văn bản | `blocked` | `disabled` |
 | CareerViet | Job portal | Có nền tảng tuyển dụng tại Việt Nam | Điều khoản hạn chế công cụ tự động điều hướng/tìm kiếm | `blocked` | `disabled` |
+| TopDev | Job portal | Đã đọc trang thỏa thuận; chưa xác minh một tin phù hợp cụ thể trong lượt này | Có giới hạn quyền nội dung và ngoại lệ sao chép nội bộ; chưa rõ quyền crawler/API cho dự án | `candidate` | `pending_permission` |
+| JobsGO | Job portal | Đã đọc điều khoản ứng viên; chưa xác minh một tin phù hợp cụ thể trong lượt này | Điều khoản yêu cầu cho phép bằng văn bản khi dùng robot/spider hoặc thu thập để tái sử dụng | `blocked` cho phương thức dự kiến | `pending_permission` |
+| Indeed | Job portal | Tìm kiếm có trang việc SOC tại Việt Nam; chưa đối chiếu từng tin gốc | Điều khoản có giới hạn bot/scraper và ngoại lệ có điều kiện; chưa xác minh ngoại lệ/quyền phù hợp cho dự án | `blocked` cho phương thức dự kiến | `pending_permission` |
+| VietnamWorks | Job portal | Công cụ duyệt web báo 403 ở trang chủ; chưa kiểm tra được tin cụ thể | Chưa xác minh API đọc tin, điều khoản tái sử dụng hoặc giới hạn GET | `candidate` | `pending_permission` |
+| Vieclam24h | Job portal | Công cụ duyệt web báo 403 ở trang chủ; chưa kiểm tra được tin cụ thể | Chưa xác minh API đọc tin, điều khoản tái sử dụng hoặc giới hạn GET | `candidate` | `pending_permission` |
 
 Các nhận xét về khả năng tích hợp chỉ là **kết quả đánh giá sơ bộ**, không phải phê duyệt pháp lý hoặc giấy phép sử dụng dữ liệu.
+
+Chín nguồn doanh nghiệp gồm Axon, Amanotes, Picus (hồ sơ mục 4) và OPSWAT, VNPT, VNG, CMC Global, Bosch, FPT IS (bảng khảo sát sơ bộ mục 7.9). Không cộng ATS provider vào số 19 nguồn/site. Lỗi 403/500 của công cụ duyệt web không phải kết quả kiểm thử API, không chứng minh tin đã đóng hoặc cho phép chuyển sang cách truy cập khác để vượt chặn.
 
 ## 4. Hồ sơ nguồn ứng viên ưu tiên
 
@@ -136,18 +147,19 @@ Các nhận xét về khả năng tích hợp chỉ là **kết quả đánh gi�
 | `provider` | Lever |
 | `external_key` dự kiến | `picus` |
 | Board/website | https://jobs.lever.co/picus |
+| Liên kết từ doanh nghiệp | `https://www.picussecurity.com/careers-at-picus` → Join our team → `https://jobs.lever.co/picus`, đối chiếu 13/11/2026 |
 | API mẫu theo tài liệu | `GET https://api.lever.co/v0/postings/picus?mode=json` |
 | Trang tin quan sát | https://jobs.lever.co/picus/3a2499d5-39e5-40c1-a0ff-3aa8d46bc73e |
 | Ví dụ tin | Solution Architect - Vietnam |
 | Địa điểm quan sát | Vietnam, remote |
-| Cấp bậc/mức phù hợp | Kinh nghiệm 3–5 năm; **không phải Intern/Junior**, thuộc mảng giải pháp bảo mật |
+| Cấp bậc/mức phù hợp | Bản lập chỉ mục ghi kinh nghiệm 3–5 năm; **không phải Intern/Junior**, thuộc mảng giải pháp bảo mật/presales; chưa xác nhận nội dung live ngày 13/11/2026 |
 | Phân trang/phạm vi thực tế | Chưa kiểm chứng |
 | Dữ liệu API thực nhận | Chưa kiểm chứng |
-| Quyền lưu metadata/JD | Chưa xác nhận |
+| Quyền lưu metadata/JD | Chưa được cấp quyền; Terms of Use mục 5 yêu cầu cho phép bằng văn bản cho thu thập có hệ thống để tạo database; phạm vi riêng cho API Lever cần làm rõ |
 | Tần suất/rate-limit được phép | Chưa xác nhận theo nguồn |
 | Response fixture được phép lưu | Chưa có |
-| Source Validation Status | `candidate` |
-| Integration Decision | `pending_permission` — Nguồn ứng viên bổ sung để kiểm thử vị trí remote tại Việt Nam |
+| Source Validation Status | `blocked` cho phương thức thu thập tự động dự kiến — cập nhật 13/11/2026; có thể đánh giá lại khi có quyền phù hợp |
+| Integration Decision | `pending_permission` — chưa phải nguồn thay thế sẵn sàng, chưa có smoke test API |
 
 **Bằng chứng:** [Board Picus](https://jobs.lever.co/picus); [Trang tin Solution Architect](https://jobs.lever.co/picus/3a2499d5-39e5-40c1-a0ff-3aa8d46bc73e); [Lever Postings API](https://github.com/lever/postings-api).
 
@@ -157,15 +169,21 @@ Các nhận xét về khả năng tích hợp chỉ là **kết quả đánh gi�
 |---|---|---|---|---|
 | ITviec | https://itviec.com/blog/terms-conditions-vn/ | Mục 2.2 giới hạn việc lấy, hiển thị, sao chép, tải hoặc truyền nội dung khi chưa có đồng ý trước bằng văn bản, ngoài các ngoại lệ được nêu | `blocked` | `pending_permission` |
 | TopCV | https://www.topcv.vn/terms-of-service | Điều khoản xác lập quyền đối với dữ liệu/nội dung; chưa xác minh quyền tự động thu thập và tái sử dụng tin; API đối tác tuyển dụng không phải API ứng viên công khai | `candidate` | `pending_permission` |
-| LinkedIn | https://www.linkedin.com/help/linkedin/answer/a1341387/ | Chính sách nêu rõ không cho phép công cụ bên thứ ba tự động scraping hoặc thao tác trái phép | `blocked` | `disabled` |
+| LinkedIn | https://www.linkedin.com/legal/user-agreement và https://www.linkedin.com/legal/crawling-terms | User Agreement mục 8.2 hạn chế scraping/bot; Crawling Terms yêu cầu được chấp thuận. Job Posting API phục vụ đăng tin của đối tác được phép, không chứng minh quyền đọc toàn bộ Jobs; xem mục 7.9 | `blocked` | `disabled` |
 | Glints | https://glints.com/vn/en/about/terms | Cấm screen scraping, data mining, robots để tái tạo dữ liệu trên website khác nếu thiếu văn bản đồng ý | `blocked` | `disabled` |
 | CareerViet | https://careerviet.vn/en/jobseekers/use | Điều khoản hạn chế sử dụng công cụ tự động tìm kiếm/điều hướng ngoài công cụ được cung cấp | `blocked` | `disabled` |
+| TopDev | https://topdev.vn/term-of-services | Có ngoại lệ bản sao dùng nội bộ, nhưng chưa xác minh phạm vi tự động thu thập/tái sử dụng hoặc API phù hợp; không suy ra mọi dùng cá nhân đều bị cấm hoặc được phép | `candidate` | `pending_permission` |
+| JobsGO | https://jobsgo.vn/media/pdf/dieu_khoan_su_dung_dich_vu_danh_cho_ung_vien_v2.0.pdf | PDF trang 9 (chỉ số trang 8) yêu cầu cho phép trước bằng văn bản khi dùng robot/spider hoặc thu thập để tái sử dụng | `blocked` cho phương thức dự kiến | `pending_permission` |
+| Indeed | https://www.indeed.com/legal?hl=en và https://qa.indeed.com/legal?hl=en | Bản điều khoản khu vực đã đọc có giới hạn tự động truy cập, ngoại lệ crawling có điều kiện theo robots.txt. Chưa xác minh điều khoản áp dụng/ngoại lệ và quyền lưu, hiển thị cho nguồn Việt Nam; xem mục 7.9 | `blocked` cho phương thức dự kiến | `pending_permission` |
+| VietnamWorks | https://www.vietnamworks.com/ | Trang chủ báo 403 qua công cụ duyệt web; điều khoản và API đọc tin chưa được xác minh. Không kết luận bị cấm pháp lý chỉ từ lỗi này | `candidate` | `pending_permission` |
+| Vieclam24h | https://vieclam24h.vn/ | Trang chủ báo 403 qua công cụ duyệt web; điều khoản và API đọc tin chưa được xác minh. Không kết luận bị cấm pháp lý chỉ từ lỗi này | `candidate` | `pending_permission` |
 | Recruitee Careers Site API | https://docs.recruitee.com/reference/authentication-1 | API của provider có tài liệu chính thức; dự án chưa có quyền/token được xác minh | Không áp dụng cho provider/API | `pending_permission` |
 | Amanotes Careers | https://www.amanotes.com/community-guidelines | Mục về scraping/data mining hạn chế thu thập tự động, yêu cầu cho phép bằng văn bản khi dùng nội dung/dữ liệu để xây công cụ; phạm vi riêng cho board Lever cần được làm rõ | `blocked` cho phương thức dự kiến | `pending_permission` |
+| Picus Careers | https://www.picussecurity.com/terms | Mục 5 yêu cầu quyền bằng văn bản cho thu thập có hệ thống để tạo collection/database; cần xác nhận phạm vi áp dụng riêng cho board/API Lever | `blocked` cho phương thức dự kiến | `pending_permission` |
 
 Tài liệu Recruitee mô tả xác thực qua header `X-Careers-Sites-Token`, với token theo từng tài khoản doanh nghiệp, và nêu hạn đưa token vào request là **10/02/2027**. Thông tin này không chứng minh mọi request đã bắt buộc token vào ngày khảo sát 08/11/2026. Dự án chưa xác minh được quyền hoặc token để tích hợp; không bật API dựa trên khả năng truy cập kỹ thuật.
 
-Có thể tiếp tục **xem tin bằng trình duyệt như người dùng bình thường** theo điều khoản tương ứng. Điều đó không đồng nghĩa với việc được phép tạo crawler hoặc lưu lại nội dung hàng loạt.
+Có thể tiếp tục **xem tin bằng trình duyệt như người dùng bình thường** theo điều khoản tương ứng. Điều đó không đồng nghĩa với việc được phép tạo crawler hoặc lưu lại nội dung hàng loạt. Các nguồn doanh nghiệp mới tại mục 7.9 cũng chưa được phép bật crawler khi chưa xác minh đầy đủ.
 
 ## 6. Ma trận yêu cầu dữ liệu của Core MVP
 
@@ -364,6 +382,72 @@ to submit applications automatically or publish a public copy of the job board.
 
 **Để đánh giá lại:** cần xác nhận bằng văn bản từ Amanotes về việc đọc board/API cụ thể, dữ liệu được giữ, hiển thị cục bộ, tần suất và quyền lưu fixture. Đầu mối điều khoản là `support@amanotes.com`; có thể yêu cầu chuyển tới nhóm careers. Chưa gửi email cho Amanotes trong lần rà soát này. Chỉ kiểm thử API và tạo fixture sau khi phạm vi phù hợp được làm rõ.
 
+### 7.8. Rà soát Picus như nguồn lựa chọn — ngày 13/11/2026
+
+Mốc ghi nhận sau lượt đối chiếu trang và điều khoản: `2026-11-13T13:59:21+00:00` / `2026-11-13T20:59:21+07:00`. Chỉ dùng trình duyệt/tìm kiếm để đọc tài liệu và đối chiếu link; không gửi đơn, không gọi API và không tạo fixture.
+
+| Bằng chứng | Ghi nhận |
+|---|---|
+| [Careers chính thức Picus](https://www.picussecurity.com/careers-at-picus) | Nút Join our team trỏ tới `https://jobs.lever.co/picus`, xác nhận mối liên hệ giữa doanh nghiệp và board. |
+| [Bài Solution Architect - Vietnam](https://jobs.lever.co/picus/3a2499d5-39e5-40c1-a0ff-3aa8d46bc73e) | ID từ URL: `3a2499d5-39e5-40c1-a0ff-3aa8d46bc73e`. Kết quả tìm kiếm từ URL gốc có bản lập chỉ mục ghi Vietnam, Remote, Sales - Solutions Architecture – APAC, yêu cầu 3–5 năm kinh nghiệm. |
+| Lần mở trực tiếp bài gốc và board | Công cụ duyệt web báo 403 cho cả hai. Không thử vượt chặn; không xem bản tìm kiếm là bằng chứng bài gốc đang nhận hồ sơ. Không suy ra API trả 403 hoặc tin đã đóng. |
+| Đánh giá nội dung từ bản lập chỉ mục | Có dấu hiệu thuộc giải pháp cybersecurity/presales tại Việt Nam. Đây là ứng viên liên quan cần kiểm tra live sau, không phải vị trí SOC đầu vào; không nhận diện mọi việc bán hàng tại công ty bảo mật là cybersecurity. |
+| [Lever Postings API](https://github.com/lever/postings-api) | Cơ chế GET theo site và `skip`/`limit` đã được mô tả; endpoint `https://api.lever.co/v0/postings/picus?mode=json` vẫn chỉ là ứng viên theo tài liệu. Chưa kiểm tra JSON, số tin hoặc phân trang thực tế của Picus. |
+| [Picus Terms of Use](https://www.picussecurity.com/terms), mục 1, 2, 3, 5 | Có quyền dùng cá nhân giới hạn, đồng thời hạn chế tự động truy cập và yêu cầu cho phép bằng văn bản khi thu thập có hệ thống để tạo database. Không suy ra ngoại lệ cho board/API bên thứ ba; phạm vi áp dụng cho phương thức dự kiến cần được xác nhận. |
+| [Contact Picus](https://www.picussecurity.com/contact-0) và footer careers | Công bố `info@picussecurity.com`; có thể hỏi và đề nghị chuyển tới người phụ trách quyền dữ liệu/careers. Chưa gửi email cho Picus. |
+
+**Kết luận:** Picus có board chính thức và bằng chứng lập chỉ mục về việc cybersecurity tại Việt Nam, nhưng chưa chứng minh được quyền tự động thu thập/lưu/hiển thị hoặc tần suất GET. Chuyển SRC-03 sang `blocked` cho phương thức thu thập dự kiến, giữ Integration Decision `pending_permission`. Đây là quyết định vận hành của dự án khi thiếu quyền phù hợp, không phải kết luận rằng mọi GET công khai hoặc mọi lần đọc trang đều bị cấm.
+
+**Phần còn thiếu:** phản hồi xác nhận quyền theo board/API, phạm vi metadata/JD, tần suất, fixture được phép lưu; sau đó mới thực hiện smoke test API và đối chiếu live bài gốc. Có thể dùng phạm vi câu hỏi mục 7.6 để hỏi Picus, thay endpoint và tên doanh nghiệp. Không tự gửi thư hoặc mở rộng script chỉ có Axon/Amanotes trong nhiệm vụ rà soát này. Chưa tìm được căn cứ đủ rõ để đưa Picus vào Core MVP.
+
+### 7.9. Khảo sát mở rộng portal và doanh nghiệp — ngày 13/11/2026
+
+Mốc ghi nhận trong lượt khảo sát: `2026-11-13T14:06:36+00:00` / `2026-11-13T21:06:36+07:00`. Đây là thời điểm khảo sát, không phải ngày đăng hoặc thời điểm chạy HTTPX. Chỉ ghi metadata và nhận xét tối thiểu để dẫn tới bằng chứng gốc; không tải toàn bộ board, tạo dataset JD hoặc thêm source vào cấu hình.
+
+#### LinkedIn: đã kiểm tra chính sách và đường tích hợp chính thức
+
+- [User Agreement, mục 8.2](https://www.linkedin.com/legal/user-agreement) hạn chế scraping/sao chép dữ liệu và bot không được phép. [Crawling Terms](https://www.linkedin.com/legal/crawling-terms) yêu cầu chấp thuận; có đầu mối `whitelist-crawl@linkedin.com`, nhưng việc công bố đầu mối không phải giấy phép cho dự án. Chưa gửi thư.
+- [Job Posting API Overview](https://learn.microsoft.com/en-us/linkedin/talent/job-postings/api/overview) mô tả đối tác được phép **đăng tin thay khách hàng**. Không xác minh được API tìm kiếm/đọc toàn bộ LinkedIn Jobs dành cho aggregator cá nhân; không dùng API đăng tin làm căn cứ cho crawler đọc tin.
+- Tìm kiếm có [bài tuyển dụng SOC Tier 1 mang tên Viettel Cyber Security Careers](https://vn.linkedin.com/posts/viettel-cyber-security-careers_viettelcybersecurity-vcscareers-careers-activity-7524307289227591681-tkfa). Đây chỉ là đầu mối khám phá: chưa đối chiếu bài tuyển dụng độc lập trên website doanh nghiệp, địa điểm đầy đủ, thời hạn hay mức kinh nghiệm. Không mặc định Tier 1 là Fresher hoặc coi tên tài khoản là bằng chứng xác thực doanh nghiệp. Chưa tính Viettel thành source độc lập thứ 20.
+- **Quyết định:** giữ `blocked` / `disabled` cho crawler LinkedIn hiện tại. Có thể dùng tìm kiếm/thông báo do LinkedIn cung cấp theo điều khoản để tìm cơ hội; không tích hợp đọc email hoặc chức năng mới trong nhiệm vụ này. Không thử guest API không được công bố, cookie phiên đăng nhập hoặc công cụ vượt chống bot.
+
+#### Các portal còn lại
+
+Mười portal và trạng thái vận hành đã được ghi thống nhất tại mục 3 và 5. Bổ sung giới hạn bằng chứng:
+
+| Portal | Phần đã đối chiếu | Phần chưa xác minh |
+|---|---|---|
+| ITviec | [Điều khoản mục 2.2](https://itviec.com/blog/terms-conditions-vn/) giới hạn lấy/tái sử dụng nội dung ngoài các ngoại lệ nêu trong đó | Chấp thuận cho crawler, phạm vi dữ liệu, rate limit và fixture |
+| TopCV | [Danh mục ATTT](https://www.topcv.vn/tim-viec-lam-an-toan-thong-tin-kt1) và [điều khoản](https://www.topcv.vn/terms-of-service) | API đọc tin cho ứng dụng này và quyền thu thập/lưu; không lấy số kết quả tìm kiếm làm số tin API |
+| Glints | [Terms of Use](https://glints.com/vn/en/about/terms), hạn chế screen scraping/robots nếu thiếu chấp thuận | Thỏa thuận hoặc cơ chế đọc tin được phép cho dự án |
+| CareerViet | [Agreement and Terms of Use](https://careerviet.vn/en/jobseekers/use), hạn chế công cụ tự động tìm kiếm/điều hướng | Thỏa thuận hoặc cơ chế đọc tin được phép cho dự án |
+| TopDev | [Thỏa thuận sử dụng](https://topdev.vn/term-of-services), có ngoại lệ bản sao nội bộ và yêu cầu ghi nguồn; trang hiện hiển thị thương hiệu Saramin | Không suy ra ngoại lệ này cho phép crawler định kỳ; API, điều khoản áp dụng sau thay đổi thương hiệu, một tin phù hợp và quyền fixture còn thiếu |
+| JobsGO | [Điều khoản ứng viên, trang 9](https://jobsgo.vn/media/pdf/dieu_khoan_su_dung_dich_vu_danh_cho_ung_vien_v2.0.pdf), giới hạn thu thập để tái sử dụng khi thiếu văn bản cho phép | Chấp thuận, một tin phù hợp cụ thể, API đọc tin và rate limit |
+| Indeed | [Điều khoản chung](https://www.indeed.com/legal?hl=en); [bản khu vực Qatar, Site Rules](https://qa.indeed.com/legal?hl=en) nêu giới hạn bot/scraper và ngoại lệ crawling có điều kiện; [trang SOC tại Việt Nam](https://jobs.vn.indeed.com/q-remote-soc-analyst-jobs.html) có kết quả lập chỉ mục | Bản khu vực không thay thế xác minh điều khoản áp dụng cho nguồn Việt Nam. Chưa xác minh ngoại lệ robots.txt/quyền phù hợp, API đọc tin, quyền lưu hoặc từng bài gốc; tạm chặn phương thức tự động dự kiến |
+| VietnamWorks | [Trang chủ chính thức](https://www.vietnamworks.com/) trả 403 qua công cụ duyệt web | Tin phù hợp, điều khoản, API, quyền lưu và rate limit; không thử né 403 |
+| Vieclam24h | [Trang chủ chính thức](https://vieclam24h.vn/) trả 403 qua công cụ duyệt web | Tin phù hợp, điều khoản, API, quyền lưu và rate limit; không thử né 403 |
+
+#### Sáu nguồn doanh nghiệp bổ sung — hồ sơ sơ bộ
+
+Các mã SRC-04–SRC-09 dưới đây chỉ định danh hồ sơ khảo sát, **không phải bản ghi database hoặc cấu hình đã bật**. Trạng thái tất cả sáu nguồn là `candidate`; Integration Decision là `pending_permission`. Chưa xác minh đủ căn cứ để gắn `blocked` theo điều khoản riêng hoặc `verified`.
+
+| Mã / nguồn / board | Tin tham chiếu và ID hoặc URL | Địa lý, mức kinh nghiệm và độ chắc của bằng chứng | Cơ chế truy cập và phần còn thiếu |
+|---|---|---|---|
+| SRC-04 — [OPSWAT Open Positions](https://www.opswat.com/careers/open-positions) | [AI Security Engineer](https://www.opswat.com/jobs/4623181005); mã từ URL `4623181005` | Trang gốc đọc được, ghi Vietnam và Cybersecurity Operations. Chưa xác nhận cấp bậc hoặc đây là vị trí đầu vào; không coi mọi tin tại công ty bảo mật là cybersecurity | Trang HTML công khai. Chưa xác minh provider/board token, API đọc tin, điều khoản crawler và quyền lưu; không suy ra token Greenhouse từ mã URL |
+| SRC-05 — [VNPT Tuyển dụng](https://tuyendung.vnpt.vn/) | [Kỹ sư chính sách An toàn thông tin](https://tuyendung.vnpt.vn/tim-viec-lam/ky-su-chinh-sach-an-toan-thong-tin-attt-jid5066.html); mã URL `5066` | Trang gốc đọc được: Hà Nội, yêu cầu 1 năm ATTT, hạn hiển thị 16/11/2026. Có nội dung GRC/tuân thủ; không gán nhãn SOC/Blue Team hoặc tự kết luận Junior | HTML; chưa xác minh public API/provider, quyền crawler/lưu và tần suất. Quy định dữ liệu cá nhân ứng viên không cấp quyền tái sử dụng tin tuyển dụng |
+| SRC-06 — [VNG Careers](https://career.vng.com.vn/vi/tim-kiem-viec-lam) | [Security Engineer, Business Operations](https://career.vng.com.vn/tim-kiem-viec-lam/chi-tiet/6473-senior-security-engineer-vi); mã URL `6473`, mã tin hiển thị `26-IT-3443` | Bản lập chỉ mục từ miền chính thức ghi TP.HCM, nhiệm vụ IAM/endpoint/network security/incident management. Lần mở trực tiếp báo 500 qua công cụ; chưa xác nhận live hoặc cấp bậc từ nội dung. Không suy ra Senior từ slug | Chưa xác minh public API/provider, quyền crawler/lưu, rate limit hoặc độ ổn định ID; không coi bản lập chỉ mục là response thật |
+| SRC-07 — [CMC Global Careers](https://cmcglobal.com.vn/career/) | [Cyber Security Engineer (SIEM/SOC)](https://cmcglobal.com.vn/career/cyber-security-engineer/); URL là định danh tham chiếu, chưa có ID API | Trang gốc đọc được: TP.HCM, nội dung SIEM/threat detection/incident response, yêu cầu kinh nghiệm. Trang hiển thị 31/10/2026 nhưng chưa xác minh ý nghĩa mốc này; không gán ngày đăng/hạn nộp | HTML; chưa xác minh public API, quyền crawler/lưu, tần suất và quy tắc phân trang. Hồ sơ này là CMC Global, không thay cho mọi đơn vị CMC |
+| SRC-08 — [Bosch Việt Nam Careers](https://www.bosch.com.vn/careers/) | [Penetration Tester — AI Safety & Security](https://jobs.smartrecruiters.com/BoschGroup/744000150285289), mã URL `744000150285289`; thêm [Senior Embedded Security Engineer](https://jobs.smartrecruiters.com/oneclick-ui/company/BoschGroup/publication/891c4f2c-89a3-4ae3-be24-7c14fa9eebb8?dcr_ci=BoschGroup) | Tin Pentester đọc được nhưng phần trích xuất chưa có trường địa điểm rõ; không suy TP.HCM từ mô tả doanh nghiệp. Tin Embedded Security ghi địa chỉ Ho Chi Minh city, Vietnam và Senior, đủ làm ví dụ địa lý. Chưa xác minh từng tin còn nhận hồ sơ | Careers chính thức liên kết `jobs.bosch.com`; có trang BoschGroup trên SmartRecruiters và tài liệu GET Posting API. Chưa kiểm thử liên kết/phạm vi board API, quyền dùng dữ liệu, tần suất hoặc phân trang thực tế |
+| SRC-09 — [FPT IS Tech Careers](https://techcareers.fis.com.vn/hotjob) | Mục **Pentester (Fresher/Junior/Senior)** trên trang tổng hợp; chưa có ID hoặc URL riêng cho từng tin | Trang đọc được, có nhiệm vụ pentest và các mục địa điểm FPT Tower, Hà Nội. Trang gộp nhiều công việc nên cần đối chiếu địa điểm/yêu cầu riêng từng mục; tiêu đề gộp không chứng minh mỗi vị trí đều nhận Fresher. Chưa xác nhận thời hạn hiện tại | HTML có form ứng tuyển: chỉ đọc, không gửi form/CV. Chưa xác minh API/provider, định danh từng tin, quyền crawler/lưu và tần suất; không coi trang tổng hợp là một job JSON |
+
+**Số liệu của sáu nguồn mới:** tổng tin thực nhận qua API, số tin cybersecurity Việt Nam, số tin đầu vào và tỷ lệ thiếu trường đều **chưa đo**, không ghi `0`. Các URL trên là mẫu khảo sát chọn lọc; số dòng không phải độ phủ toàn board. Mã lấy từ URL chưa được chứng minh ổn định qua các lần thu thập. Không lưu JD đầy đủ hoặc tái dựng JSON từ HTML làm fixture.
+
+**Đầu mối tin đầu vào cần kiểm tra tiếp:** [VNG System Intern (SRE & Security Platform), GreenNode](https://career.vng.com.vn/tim-kiem-viec-lam/chi-tiet/6752-system-intern-greennode-vi) có bản lập chỉ mục nêu OS hardening, nhưng mở trực tiếp bị timeout; địa điểm, mức liên quan của toàn vị trí và tình trạng tuyển hiện tại chưa được đối chiếu đầy đủ. Cùng mục Pentester của FPT IS, đây là đầu mối triển vọng, **chưa thay đổi kết luận chưa xác minh được nguồn có tin SOC/Blue Team Intern/Fresher/Junior đang mở tại Việt Nam**.
+
+**Provider bổ sung:** [SmartRecruiters public Posting API](https://developers.smartrecruiters.com/docs/endpoints) mô tả GET danh sách theo công ty, có `limit`/`offset` và lọc `country`; chưa gọi endpoint Bosch. [Ashby Job Postings API](https://developers.ashbyhq.com/docs/public-job-posting-api) mô tả GET theo board để dựng careers của doanh nghiệp; chưa xác định board phù hợp tại Việt Nam. Đây là nghiên cứu cơ chế, không lựa chọn adapter, thêm công nghệ hoặc quyền sử dụng thay cho doanh nghiệp.
+
+**Ưu tiên sau khảo sát:** tiếp tục chờ Axon vì đã có bằng chứng kỹ thuật; trong các nguồn mới, ưu tiên làm rõ quyền và dữ liệu của OPSWAT, VNPT, VNG, CMC Global, Bosch và FPT IS. FPT IS/VNG đáng chú ý về đầu mối vị trí đầu vào; Bosch đáng chú ý về tài liệu API. Chưa có cơ sở kết luận nguồn nào dễ được cấp quyền hoặc đủ điều kiện thay Axon. Với mỗi nguồn cần xác minh riêng endpoint/phương thức, metadata/JD được lưu và hiển thị, tần suất, phạm vi board/phân trang, fixture riêng tư/công khai; sau đó mới chuẩn bị smoke test tương ứng. Không gửi hàng loạt email hoặc gọi thử API trong lượt khảo sát này.
+
 ## 8. Các rủi ro và cách xử lý
 
 | Rủi ro | Ảnh hưởng đến MVP | Quyết định |
@@ -398,11 +482,15 @@ Chỉ chuyển Phase 0 sang **PASS** khi đáp ứng tất cả điều kiện s
 
 **Theo dõi tiếp ngày 12/11/2026:** email xin làm rõ Axon đã gửi qua Gmail; việc gửi không đồng nghĩa được cấp quyền. Amanotes được chuyển `blocked` / `pending_permission` cho phương thức tự động dự kiến sau rà soát chính sách; chưa có nguồn bổ sung đạt `verified`. Tiếp tục chờ bằng chứng trước khi tạo fixture hoặc chuyển sang Phase 1.
 
+**Cập nhật ngày 13/11/2026:** đã rà soát Picus theo mục 7.8, chuyển sang `blocked` / `pending_permission` cho thu thập tự động dự kiến. Không bổ sung nguồn `verified`; Phase 0 tiếp tục `IN PROGRESS`. Bản tìm kiếm của tin Picus không thay thế điều kiện mở được URL gốc; điều kiện bài phù hợp trước đó vẫn dựa trên Axon tại mục 7.5.
+
+**Khảo sát mở rộng ngày 13/11/2026:** mục 3, 5 và 7.9 ghi 19 nguồn/site ở các mức bằng chứng khác nhau. Sáu nguồn doanh nghiệp mới chỉ có hồ sơ sơ bộ, chưa smoke test hoặc có fixture/quyền lưu được xác minh. LinkedIn tiếp tục `blocked` / `disabled`; chưa có source mới `verified`, chưa chọn adapter và chưa PASS Phase 0.
+
 ## 10. Đề xuất hành động tiếp theo
 
-1. **Ưu tiên SRC-01 Axon**, SRC-02 Amanotes và SRC-03 Picus để xác minh điều kiện sử dụng dữ liệu, vì đã có URL board và trang tin công khai.
-2. Tìm thêm các board doanh nghiệp **đang có vị trí SOC/Blue Team/Network Security Intern, Fresher hoặc Junior tại Việt Nam**. Các tin senior kể trên chỉ chứng minh sự hiện diện của chủ đề cybersecurity, chưa chứng minh giá trị tìm việc cho đối tượng mục tiêu.
-3. Với **Axon**, theo dõi phản hồi thư đã gửi tại mục 7.6 và ghi đúng phạm vi được chấp thuận nếu có. Với **Amanotes**, cần làm rõ chấp thuận bằng văn bản theo mục 7.7; chưa chạy API trong lúc thiếu quyền. Với **Picus**, vẫn cần xác minh quyền trước thử nghiệm. Không coi kết quả Axon là bằng chứng cho các nguồn khác.
+1. **Tiếp tục ưu tiên SRC-01 Axon** về bằng chứng kỹ thuật; khảo sát quyền của các nguồn doanh nghiệp SRC-04–SRC-09 tại mục 7.9 để có lựa chọn bổ sung. Amanotes/Picus vẫn cần chấp thuận riêng, không phải nguồn thay thế sẵn sàng.
+2. Đối chiếu tiếp đầu mối Pentester FPT IS và System Intern VNG, xác nhận địa điểm, yêu cầu kinh nghiệm và tình trạng tuyển. Tiếp tục tìm board **đang có vị trí SOC/Blue Team/Network Security Intern, Fresher hoặc Junior tại Việt Nam**; tiêu đề gộp hoặc bản lập chỉ mục chưa chứng minh đã đạt mục tiêu này.
+3. Với **Axon**, theo dõi phản hồi thư đã gửi tại mục 7.6 và ghi đúng phạm vi được chấp thuận nếu có. Với **Amanotes/Picus**, cần làm rõ chấp thuận theo mục 7.7–7.8; chưa chạy API trong lúc thiếu quyền. Không coi kết quả Axon là bằng chứng cho các nguồn khác.
 4. Sau khi có căn cứ lưu phù hợp, tạo fixture thật và bộ mẫu gán nhãn theo kế hoạch mục 7.6 và `docs/intent.md`, tách biệt bằng chứng nguồn thật với dữ liệu giả lập.
 5. Chỉ khi Phase 0 đạt các điều kiện, bao gồm một source `verified` và response mẫu được phép lưu, bắt đầu **Phase 1 — Core MVP**: xây adapter → chuẩn hóa/phân loại → SQLite → Streamlit → mở URL bài gốc.
 
@@ -433,6 +521,9 @@ Tin Intern/Fresher/Junior là ưu tiên tìm kiếm, không phải điều kiệ
 - [Amanotes — Terms of Service](https://www.amanotes.com/terms-and-conditions)
 - [Amanotes — Community Guidelines](https://www.amanotes.com/community-guidelines)
 - [Amanotes — Careers chính thức](https://careers.amanotes.com/)
+- [Picus — Careers chính thức](https://www.picussecurity.com/careers-at-picus)
+- [Picus — Terms of Use](https://www.picussecurity.com/terms)
+- [Picus — Contact](https://www.picussecurity.com/contact-0)
 - [ITviec — Thỏa thuận sử dụng](https://itviec.com/blog/terms-conditions-vn/)
 - [TopCV — Điều khoản dịch vụ](https://www.topcv.vn/terms-of-service)
 - [LinkedIn — Prohibited software and extensions](https://www.linkedin.com/help/linkedin/answer/a1341387/)
@@ -441,4 +532,4 @@ Tin Intern/Fresher/Junior là ưu tiên tìm kiếm, không phải điều kiệ
 
 ---
 
-**Quyết định cập nhật ngày 12/11/2026:** Giữ Phase 0 ở trạng thái `IN PROGRESS`. Axon có smoke test kỹ thuật, bài gốc phù hợp và căn cứ về phạm vi API, nhưng vẫn là `candidate` / `pending_permission` trong lúc chờ phản hồi yêu cầu quyền đã gửi. Amanotes là `blocked` / `pending_permission` cho phương thức tự động dự kiến theo rà soát mục 7.7. Chưa tạo fixture nguồn thật khi quyền lưu chưa được xác minh. Không bật source hoặc chọn adapter chính thức trước khi các điều kiện còn thiếu hoàn tất.
+**Quyết định cập nhật ngày 13/11/2026:** Giữ Phase 0 ở trạng thái `IN PROGRESS`. Axon có smoke test kỹ thuật, bài gốc phù hợp và căn cứ về phạm vi API, nhưng vẫn là `candidate` / `pending_permission` trong lúc chờ làm rõ quyền sử dụng. Amanotes và Picus là `blocked` / `pending_permission` cho phương thức tự động dự kiến theo mục 7.7–7.8. Khảo sát mở rộng 19 nguồn/site ở mục 7.9 chưa bổ sung source `verified`; LinkedIn vẫn `blocked` / `disabled`, sáu nguồn doanh nghiệp mới là `candidate` / `pending_permission`. Chưa tạo fixture nguồn thật khi quyền lưu chưa được xác minh. Không bật source hoặc chọn adapter chính thức trước khi các điều kiện còn thiếu hoàn tất. Phiên bản tài liệu tăng 0.5 → 0.6 cho lượt khảo sát mở rộng; phiên bản sản phẩm giữ MVP v1.0.
