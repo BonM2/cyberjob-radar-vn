@@ -1,7 +1,7 @@
 # CyberJob Radar VN — Source Validation
 
 > **Dự án:** CyberJob Radar VN — MVP sản phẩm v1.0
-> **Phiên bản tài liệu:** 0.6 — mở rộng khảo sát 19 nguồn/site, làm rõ LinkedIn và nguồn doanh nghiệp ngày 13/11/2026; giữ MVP sản phẩm v1.0
+> **Phiên bản tài liệu:** 0.7 — theo dõi yêu cầu Axon và rà soát nguồn dự phòng Bosch ngày 18/11/2026
 > **Giai đoạn SDLC:** Phase 0 — Requirements Analysis & Feasibility / Source Validation
 > **Trạng thái:** `IN PROGRESS` — **chưa có nguồn cụ thể đạt `verified`**
 > **Phạm vi:** Công cụ cá nhân chạy cục bộ, tổng hợp tin tuyển dụng cybersecurity tại Việt Nam
@@ -448,6 +448,20 @@ Các mã SRC-04–SRC-09 dưới đây chỉ định danh hồ sơ khảo sát, 
 
 **Ưu tiên sau khảo sát:** tiếp tục chờ Axon vì đã có bằng chứng kỹ thuật; trong các nguồn mới, ưu tiên làm rõ quyền và dữ liệu của OPSWAT, VNPT, VNG, CMC Global, Bosch và FPT IS. FPT IS/VNG đáng chú ý về đầu mối vị trí đầu vào; Bosch đáng chú ý về tài liệu API. Chưa có cơ sở kết luận nguồn nào dễ được cấp quyền hoặc đủ điều kiện thay Axon. Với mỗi nguồn cần xác minh riêng endpoint/phương thức, metadata/JD được lưu và hiển thị, tần suất, phạm vi board/phân trang, fixture riêng tư/công khai; sau đó mới chuẩn bị smoke test tương ứng. Không gửi hàng loạt email hoặc gọi thử API trong lượt khảo sát này.
 
+### 7.10. Theo dõi Axon và rà soát Bosch — ngày 18/11/2026
+
+**Axon (SRC-01).** Đã kiểm tra chuỗi thư gửi `ip@axon.com` ngày 12/11 và tìm thư liên quan trong Gmail. Chuỗi thư chỉ có thư đã gửi, chưa tìm thấy phản hồi. Đã lưu bản nháp trả lời ngay trong chuỗi thư để hỏi về một lượt đọc mỗi 12 giờ, lưu và hiển thị cục bộ ID, chức danh, địa điểm, URL gốc và giữ mẫu metadata rút gọn để kiểm thử. Phạm vi của bản nháp là sử dụng riêng tư, phi thương mại và chỉ gồm metadata. Trạng thái trao đổi: `DRAFT`. Trạng thái nguồn: `candidate` / `pending_permission`.
+
+**Bosch (SRC-08).** Bosch công bố [trang tìm việc tại Việt Nam](https://jobs.bosch.com/vi/?pages=1&country=vn) trong [danh sách các kênh tuyển dụng chính thức](https://www.bosch.com.vn/news-and-stories/notice-ensure-authenticity-use-only-official-job-portal/). Trang BoschGroup trên SmartRecruiters hiển thị vị trí [Senior Embedded Security Engineer](https://jobs.smartrecruiters.com/oneclick-ui/company/BoschGroup/publication/891c4f2c-89a3-4ae3-be24-7c14fa9eebb8?dcr_ci=BoschGroup) ở TP.HCM trong nội dung trích xuất. Tình trạng nhận hồ sơ hiện tại còn cần đối chiếu.
+
+| Hạng mục | Căn cứ và kết quả |
+|---|---|
+| Phương thức đọc | [Posting API Reference](https://developers.smartrecruiters.com/reference/v1listpostings) ghi `GET /v1/companies/{companyIdentifier}/postings` với `destination=PUBLIC`, bộ lọc quốc gia và phân trang `limit`/`offset`. `BoschGroup` là mã công ty trên URL tin tham chiếu. Việc mã này dùng được với API và phạm vi danh sách thực tế còn cần kiểm chứng. |
+| Xác thực | [Tài liệu xác thực](https://developers.smartrecruiters.com/docs/authentication) nêu Posting API là ví dụ truy cập dữ liệu công khai không cần xác thực. Tài liệu endpoint yêu cầu scope `internal_postings_read` cho truy vấn có tin nội bộ. Phạm vi đang xem xét là `destination=PUBLIC`. |
+| Quyền sử dụng | [Thông cáo pháp lý Bosch Việt Nam](https://www.bosch.com.vn/legal-notice/) nêu quyền đối với nội dung website. Tài liệu của Bosch và SmartRecruiters đã đọc chưa xác nhận quyền đọc định kỳ, giữ metadata hoặc mẫu phản hồi cho công cụ cá nhân này. Tần suất áp dụng, yêu cầu ghi nguồn và thời hạn giữ dữ liệu còn cần làm rõ theo kênh được phép. |
+| Đầu mối | [Trang liên hệ Bosch Việt Nam](https://www.bosch.com.vn/contact/) công bố `Career.RBVH@vn.bosch.com` trong mục tuyển dụng. Đã lưu bản nháp hỏi đầu mối này về API hoặc kênh chính thức thay thế, tần suất, quyền giữ bốn trường metadata và mẫu cục bộ rút gọn. Trạng thái trao đổi: `DRAFT`. |
+| Quyết định tích hợp | `candidate` / `pending_permission`. Chưa có smoke test Bosch hoặc mẫu phản hồi được phép lưu. |
+
 ## 8. Các rủi ro và cách xử lý
 
 | Rủi ro | Ảnh hưởng đến MVP | Quyết định |
@@ -485,6 +499,8 @@ Chỉ chuyển Phase 0 sang **PASS** khi đáp ứng tất cả điều kiện s
 **Cập nhật ngày 13/11/2026:** đã rà soát Picus theo mục 7.8, chuyển sang `blocked` / `pending_permission` cho thu thập tự động dự kiến. Không bổ sung nguồn `verified`; Phase 0 tiếp tục `IN PROGRESS`. Bản tìm kiếm của tin Picus không thay thế điều kiện mở được URL gốc; điều kiện bài phù hợp trước đó vẫn dựa trên Axon tại mục 7.5.
 
 **Khảo sát mở rộng ngày 13/11/2026:** mục 3, 5 và 7.9 ghi 19 nguồn/site ở các mức bằng chứng khác nhau. Sáu nguồn doanh nghiệp mới chỉ có hồ sơ sơ bộ, chưa smoke test hoặc có fixture/quyền lưu được xác minh. LinkedIn tiếp tục `blocked` / `disabled`; chưa có source mới `verified`, chưa chọn adapter và chưa PASS Phase 0.
+
+**Cập nhật ngày 18/11/2026:** hồ sơ mục 7.10 ghi kết quả kiểm tra phản hồi Axon, căn cứ kỹ thuật cho Bosch và hai bản nháp Gmail. Quyền sử dụng và giữ mẫu vẫn chưa được xác nhận. Phase 0 tiếp tục `IN PROGRESS`.
 
 ## 10. Đề xuất hành động tiếp theo
 
